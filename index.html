@@ -764,14 +764,12 @@
                 document.getElementById('fraction-opts').style.display = 'none';
             }
 
-            if (lvl === 1) { min = 1; max = 200; allowedModes = ['numbers']; }
-            else if (lvl === 2) { min = 1; max = 5000; allowedModes = ['numbers', 'gender', 'prices']; }
-            else if (lvl === 3) { 
-                min = 1; max = 10000; allowedModes = ['numbers', 'gender', 'prices', 'time'];
+            if (lvl === 1) { min = 1; max = 20; allowedModes = ['numbers']; }
+            else if (lvl === 2) { min = 1; max = 100; allowedModes = ['numbers', 'gender', 'prices']; }
+            else if (lvl === 3) { min = 1; max = 1000; allowedModes = ['numbers', 'gender', 'prices', 'time'];
                 if (state.mode === 'numbers') document.getElementById('negatives-toggle').checked = true;
             }
-            else if (lvl === 4) { 
-                min = 1; max = 20000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates']; 
+            else if (lvl === 4) {min = 1; max = 10000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates']; 
                 if (state.mode === 'numbers') {
                     document.getElementById('negatives-toggle').checked = true;
                     document.getElementById('decimal-toggle').checked = true;
@@ -779,7 +777,7 @@
                 }
             }
             else if (lvl === 5) { 
-                min = 1; max = 50000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates', 'context']; 
+                min = 1; max = 100000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates', 'context']; 
                 if (state.mode === 'numbers') {
                     document.getElementById('negatives-toggle').checked = true;
                     document.getElementById('decimal-toggle').checked = true;
