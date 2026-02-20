@@ -3,18 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Welsh Number Trainer</title>
+    <title>Hyfforddwr rhifau Cymraeg</title>
     <meta name="theme-color" content="#ffffff">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197529.png">
 </head>
 <body onload="init()">
-
+<div id="handsfree-page" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg); z-index:9999; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px;">
+    
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center; width:100%;">
+        <div style="font-size:3rem; margin-bottom:10px;">🚗</div>
+        <div style="font-size:1rem; color:var(--primary); font-weight:bold; margin-bottom:40px; text-transform:uppercase;">Handsfree Mode Active</div>
+        
+        <div id="hf-pl-text" style="font-size:2.5rem; color:var(--text); font-weight:800; margin-bottom:20px; line-height:1.2;">---</div>
+        <div id="hf-en-text" style="font-size:1.5rem; color:#888; font-weight:500;">---</div>
+    </div>
+    
+    <button onclick="toggleHandsfree()" style="background:#ea4335; color:white; border:none; padding:20px 40px; border-radius:30px; font-size:1.2rem; font-weight:bold; margin-bottom:40px; cursor:pointer; box-shadow:0 4px 15px rgba(234, 67, 53, 0.4);">⏹ EXIT HANDSFREE</button>
+</div>
 <div class="brand-header">
     <div class="header-controls-left">
         <button class="icon-btn" onclick="toggleHelp()" title="Help">❓</button>
     </div>
 
-    <div class="brand-title">Welsh Number Trainer</div>
+    <div class="brand-title">Hyfforddwr rhifau Cymraeg</div>
 
     <div class="header-controls-right">
         <button class="icon-btn" onclick="toggleSettings()" title="Settings">⚙️</button>
@@ -23,10 +34,10 @@
 
 <div class="status-bar">
     <div class="stats-group">
-        <div class="stat-item" title="XP">⭐ <span id="xp-display">0</span></div>
-        <div class="stat-item" title="Streak">🔥 <span id="streak-display">0</span></div>
-        <div class="stat-item" title="Daily Goal">🎯 <span id="daily-display">0/300</span></div>
-        <div class="stat-item" title="Rank">🏆 <span id="rank-display">Novice</span></div>
+        <div class="stat-item" title="Profiad (XP)">⭐ <span id="xp-display">0</span></div>
+        <div class="stat-item" title="Rhes">🔥 <span id="streak-display">0</span></div>
+        <div class="stat-item" title="Nod Dyddiol">🎯 <span id="daily-display">0/300</span></div>
+        <div class="stat-item" title="Safle">🏆 <span id="rank-display">Dechreuwr</span></div>
     </div>
 </div>
 
@@ -65,7 +76,7 @@
     
     <button class="btn-action" id="mic-btn" style="background:#ea4335; font-size:1.5rem;" onclick="toggleMic()">🎙️</button>
     <button class="btn-action btn-hf" id="hf-btn" onclick="toggleHandsfree()">🚗</button>
-    <button class="btn-action btn-next" id="main-btn" onclick="generate()">SKIP ➡️</button>
+    <button class="btn-action btn-next" id="main-btn" onclick="generate()">HEPGOR ➡️</button>
 </div>
 
 
@@ -431,22 +442,22 @@
     };
 
     const RANKS = [
-        { limit: 0, name: "Novice" },
-        { limit: 200, name: "Apprentice" },
-        { limit: 5000, name: "Journeyman" },
-        { limit: 10000, name: "Expert" },
-        { limit: 20000, name: "Master" },
-        { limit: 50000, name: "Guru" }
-    ];
+    { limit: 0, name: "Dechreuwr" },     // Novice (Beginner)
+    { limit: 200, name: "Prentis" },     // Apprentice
+    { limit: 5000, name: "Crefftwr" },   // Journeyman (Craftsman)
+    { limit: 10000, name: "Arbenigwr" }, // Expert
+    { limit: 20000, name: "Meistr" },    // Master
+    { limit: 50000, name: "Gwrw" }       // Guru
+];
 
-    const PRACTICE_RANKS = [
-        { limit: 0, name: "Tourist" },
-        { limit: 500, name: "Trainee" },
-        { limit: 5000, name: "Grinder" },
-        { limit: 10000, name: "Gym Rat" },
-        { limit: 25000, name: "Veteran" },
-        { limit: 50000, name: "Legend" }
-    ];
+   const PRACTICE_RANKS = [
+    { limit: 0, name: "Ymwelydd" },      // Tourist (Visitor)
+    { limit: 500, name: "Dysgwr" },      // Trainee (Learner)
+    { limit: 5000, name: "Ymdrechwr" },  // Grinder (Striver / Hard Worker)
+    { limit: 10000, name: "Seliwr" },    // Gym Rat (Enthusiast / Devotee)
+    { limit: 25000, name: "Hen Law" },   // Veteran (Literally "Old Hand", a great Welsh idiom)
+    { limit: 50000, name: "Chwedl" }     // Legend
+];
 
     const GENDER_NOUNS = [
         { word: "ci", pl: "cŵn", form: "m", en: "dog", soft: "gi", asp: "chi", plSoft: "gŵn", logic: "living" },
@@ -731,7 +742,7 @@
         }
 
         const mainBtn = document.getElementById('main-btn');
-        mainBtn.innerText = "SKIP ➡️"; 
+        mainBtn.innerText = "HEPGOR ➡️"; 
         mainBtn.classList.remove('ready'); 
         document.getElementById('type-input').value = "";
         document.getElementById('type-input').style.borderColor = "var(--border)";
@@ -1433,7 +1444,7 @@
         if (state.mode === 'context') { enBox.innerText = state.currentEN; cyBox.innerHTML = state.speechText; } 
         else { cyBox.innerText = state.currentCY; enBox.innerText = state.currentEN; }
         
-        const mainBtn = document.getElementById('main-btn'); mainBtn.innerText = "NEXT >>"; mainBtn.classList.add('ready');
+        const mainBtn = document.getElementById('main-btn'); mainBtn.innerText = "NESAF >>"; mainBtn.classList.add('ready');
         if (!state.handsfree) { setTimeout(() => speak(1.0), 400); autoNextTimer = setTimeout(generate, 3000); }
         updateUI();
     }
@@ -1455,40 +1466,153 @@
         updateUI();
     }
     
-    function toggleHandsfree() { state.handsfree = !state.handsfree; let btn = document.getElementById('hf-btn'); if (state.handsfree) { btn.classList.add('active'); document.getElementById('badge-handsfree').style.display = 'block'; initAudio(); generate(); } else { btn.classList.remove('active'); document.getElementById('badge-handsfree').style.display = 'none'; window.speechSynthesis.cancel(); if (autoNextTimer) clearTimeout(autoNextTimer); } }
-    
-    function playHandsfreeSequence() { 
-        if (!state.handsfree) return; 
+    function toggleHandsfree() { 
+    state.handsfree = !state.handsfree; 
+    const hfPage = document.getElementById('handsfree-page');
+
+    if (state.handsfree) { 
+        // 1. Show the dedicated full-screen page
+        hfPage.style.display = 'flex'; 
+        initAudio(); 
+        
+        // 2. Start the isolated handsfree loop
+        generateHandsfree(); 
+    } else { 
+        // 1. Hide the dedicated page
+        hfPage.style.display = 'none'; 
+        
+        // 2. Hard kill all audio and timers
+        if (autoNextTimer) clearTimeout(autoNextTimer); 
         window.speechSynthesis.cancel(); 
-        
-        state.audioPlaying = true;
-        const grid = document.getElementById('mc-area');
-        if (grid) { grid.style.pointerEvents = 'none'; grid.style.opacity = '0.5'; }
+        state.audioPlaying = false;
 
-        let cyText = (state.mode === 'context') ? state.speechText : state.currentCY; 
-        let enText = state.currentEN; 
-        
-        let u1 = new SpeechSynthesisUtterance(" " + cyText); u1.lang = 'cy-GB'; u1.rate = 1.0; 
-        let u2 = new SpeechSynthesisUtterance(" " + enText); u2.lang = 'en-US'; u2.rate = 1.0; 
-        let u3 = new SpeechSynthesisUtterance(" " + cyText); u3.lang = 'cy-GB'; u3.rate = 0.5; 
-        let u4 = new SpeechSynthesisUtterance(" " + cyText); u4.lang = 'cy-GB'; u4.rate = 1.0; 
-        
-        u4.onend = () => { 
-            state.audioPlaying = false;
-            if (grid) { grid.style.pointerEvents = 'auto'; grid.style.opacity = '1'; }
-            if(state.handsfree) autoNextTimer = setTimeout(generate, 3000); 
-        }; 
-        u4.onerror = () => {
-            state.audioPlaying = false;
-            if (grid) { grid.style.pointerEvents = 'auto'; grid.style.opacity = '1'; }
-        };
+        // 3. Restart standard game safely in the background
+        generate(); 
+    } 
+}
 
-        window.speechSynthesis.speak(u1); 
-        window.speechSynthesis.speak(u2); 
-        window.speechSynthesis.speak(u3); 
-        window.speechSynthesis.speak(u4); 
+// A completely isolated generator strictly for the Handsfree page
+function generateHandsfree() { 
+    if (!state.handsfree) return; 
+    
+    if (autoNextTimer) clearTimeout(autoNextTimer);
+    window.speechSynthesis.cancel(); 
+    state.audioPlaying = true;
+
+    // 1. Determine ranges (Respects Campaign or Manual sliders)
+    let min = 1, max = 100;
+    if (document.getElementById('campaign-toggle').checked) {
+        // Sync with whatever the campaign level allows
+        let lblMin = document.getElementById('lbl-min').innerText.replace(/,/g, '');
+        let lblMax = document.getElementById('lbl-max').innerText.split(' ')[0].replace(/,/g, '');
+        min = parseInt(lblMin) || 1;
+        max = parseInt(lblMax) || 200;
+    } else {
+        min = Math.pow(10, document.getElementById('minP').value);
+        max = Math.pow(10, document.getElementById('maxP').value);
     }
 
+    // 2. Generate and process the word
+    let newVal, safety = 0;
+    do { 
+        newVal = generateRawValue(min, max, state.mode); 
+        safety++; 
+    } while (isRepeated(newVal) && safety < 15);
+    
+    addToHistory(newVal);
+    processValue(newVal, state.mode);
+
+    // 3. Update the dedicated Handsfree DOM elements directly
+    let targetText = (state.mode === 'context') ? state.speechText : (state.currentPL || state.currentCY);
+    
+    document.getElementById('hf-pl-text').innerHTML = (state.mode === 'context') ? state.speechText : targetText;
+    document.getElementById('hf-en-text').innerText = state.currentEN;
+
+    // 4. The Audio Chain
+    let langCode = document.documentElement.lang === 'cy' ? 'cy-GB' : 'pl-PL';
+    
+    let u1 = new SpeechSynthesisUtterance(" " + targetText); u1.lang = langCode; u1.rate = 1.0; 
+    let u2 = new SpeechSynthesisUtterance(" " + state.currentEN); u2.lang = 'en-US'; u2.rate = 1.0; 
+    let u3 = new SpeechSynthesisUtterance(" " + targetText); u3.lang = langCode; u3.rate = 0.5; 
+    let u4 = new SpeechSynthesisUtterance(" " + targetText); u4.lang = langCode; u4.rate = 1.0; 
+    
+    const playNext = (u) => { if (state.handsfree) window.speechSynthesis.speak(u); };
+    const scheduleNext = () => { 
+        if (state.handsfree) {
+            state.audioPlaying = false;
+            // Loop back to the start of this isolated function
+            autoNextTimer = setTimeout(generateHandsfree, 3000); 
+        }
+    }; 
+    
+    u1.onend = () => playNext(u2); u1.onerror = () => playNext(u2);
+    u2.onend = () => playNext(u3); u2.onerror = () => playNext(u3);
+    u3.onend = () => playNext(u4); u3.onerror = () => playNext(u4);
+    u4.onend = scheduleNext;       u4.onerror = scheduleNext;
+
+    if (state.handsfree) window.speechSynthesis.speak(u1); 
+}
+    
+    function generateHandsfree() { 
+    if (!state.handsfree) return; 
+    
+    if (autoNextTimer) clearTimeout(autoNextTimer);
+    window.speechSynthesis.cancel(); 
+    state.audioPlaying = true;
+
+    // 1. Determine ranges (Respects Campaign or Manual sliders)
+    let min = 1, max = 100;
+    if (document.getElementById('campaign-toggle').checked) {
+        // Sync with whatever the campaign level allows
+        let lblMin = document.getElementById('lbl-min').innerText.replace(/,/g, '');
+        let lblMax = document.getElementById('lbl-max').innerText.split(' ')[0].replace(/,/g, '');
+        min = parseInt(lblMin) || 1;
+        max = parseInt(lblMax) || 200;
+    } else {
+        min = Math.pow(10, document.getElementById('minP').value);
+        max = Math.pow(10, document.getElementById('maxP').value);
+    }
+
+    // 2. Generate and process the word
+    let newVal, safety = 0;
+    do { 
+        newVal = generateRawValue(min, max, state.mode); 
+        safety++; 
+    } while (isRepeated(newVal) && safety < 15);
+    
+    addToHistory(newVal);
+    processValue(newVal, state.mode);
+
+    // 3. Update the dedicated Handsfree DOM elements directly
+    let targetText = (state.mode === 'context') ? state.speechText : (state.currentPL || state.currentCY);
+    
+    document.getElementById('hf-pl-text').innerHTML = (state.mode === 'context') ? state.speechText : targetText;
+    document.getElementById('hf-en-text').innerText = state.currentEN;
+
+    // 4. The Audio Chain
+    let langCode = document.documentElement.lang === 'cy' ? 'cy-GB' : 'pl-PL';
+    
+    let u1 = new SpeechSynthesisUtterance(" " + targetText); u1.lang = langCode; u1.rate = 1.0; 
+    let u2 = new SpeechSynthesisUtterance(" " + state.currentEN); u2.lang = 'en-US'; u2.rate = 1.0; 
+    let u3 = new SpeechSynthesisUtterance(" " + targetText); u3.lang = langCode; u3.rate = 0.5; 
+    let u4 = new SpeechSynthesisUtterance(" " + targetText); u4.lang = langCode; u4.rate = 1.0; 
+    
+    const playNext = (u) => { if (state.handsfree) window.speechSynthesis.speak(u); };
+    const scheduleNext = () => { 
+        if (state.handsfree) {
+            state.audioPlaying = false;
+            // Loop back to the start of this isolated function
+            autoNextTimer = setTimeout(generateHandsfree, 3000); 
+        }
+    }; 
+    
+    u1.onend = () => playNext(u2); u1.onerror = () => playNext(u2);
+    u2.onend = () => playNext(u3); u2.onerror = () => playNext(u3);
+    u3.onend = () => playNext(u4); u3.onerror = () => playNext(u4);
+    u4.onend = scheduleNext;       u4.onerror = scheduleNext;
+
+    if (state.handsfree) window.speechSynthesis.speak(u1); 
+}
     function handleSpeakerClick() { speakerTaps++; if (speakerTapTimer) clearTimeout(speakerTapTimer); speakerTapTimer = setTimeout(() => { let rate = 1.0; let msg = ""; if (speakerTaps === 1) { rate = 1.0; } else if (speakerTaps === 2) { rate = 0.5; msg = "🐢 Slow Speed (0.5x)"; } else { rate = 0.25; msg = "🐢🐢 Super Slow (0.25x)"; } if (msg) { let fb = document.getElementById('voice-feedback'); fb.innerText = msg; fb.style.color = "var(--primary)"; setTimeout(() => { if(fb.innerText === msg) fb.innerText = ""; }, 1500); } speak(rate); speakerTaps = 0; }, 300); }
     
     function updateModeUI(m) {
@@ -1880,7 +2004,7 @@
         const dailyBox = document.getElementById('daily-display');
         if (dailyBox) {
             if (state.goalMet) {
-                dailyBox.innerHTML = `<span style="color:var(--secondary)">Done! ✔️</span>`;
+                dailyBox.innerHTML = `<span style="color:var(--secondary)">Wedi gorffen! ✔️</span>`;
             } else {
                 dailyBox.innerText = `${state.dailyXP}/${state.dailyGoal}`;
             }
