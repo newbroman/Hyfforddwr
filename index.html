@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="cy">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Welsh Number Trainer</title>
+    <meta name="theme-color" content="#ffffff">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197529.png">
+</head>
+<body onload="init()">
+
+<div class="brand-header">
+    <div class="header-controls-left">
+        <button class="icon-btn" onclick="toggleHelp()" title="Help">❓</button>
+    </div>
+
+    <div class="brand-title">Welsh Number Trainer</div>
+
+    <div class="header-controls-right">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">⚙️</button>
+    </div>
+</div>
+
+<div class="status-bar">
+    <div class="stats-group">
+        <div class="stat-item" title="XP">⭐ <span id="xp-display">0</span></div>
+        <div class="stat-item" title="Streak">🔥 <span id="streak-display">0</span></div>
+        <div class="stat-item" title="Daily Goal">🎯 <span id="daily-display">0/300</span></div>
+        <div class="stat-item" title="Rank">🏆 <span id="rank-display">Novice</span></div>
+    </div>
+</div>
+
+<div class="game-area">
+    <div id="display-box" class="display-box">
+        <div id="mode-label" class="mode-label">Numbers</div>
+        <div id="grammar-badge" class="grammar-badge">Rule: Soft Mutation</div>
+        <div id="badge-review" class="badge badge-review">Review</div>
+        <div id="badge-score" class="badge badge-score">+10</div>
+        <div id="badge-blind" class="badge badge-blind">🙈 Audio Only</div>
+        <div id="badge-handsfree" class="badge badge-handsfree">Handsfree On</div>
+        
+        <div id="voice-feedback" style="font-size:0.9rem; color:var(--error); font-weight:bold; min-height:1.2em; margin-bottom:5px;"></div>
+
+        <div id="cy-text" class="pl-text">---</div>
+        <div id="en-text" class="en-text">---</div>
+    </div>
+
+    <div id="mc-area" class="mc-grid cols-2"></div>
+    
+    <div id="type-area" class="type-container">
+        <input type="text" id="type-input" class="type-input" placeholder="Type answer..." autocomplete="off">
+        <button class="btn-check" id="action-btn" onclick="checkTyped()">CHECK ANSWER</button>
+    </div>
+    
+    <div id="voice-controls" style="display:none; text-align:center; margin-top:-10px; color:#666;">
+        <p>Tap the mic and say the Welsh word.</p>
+    </div>
+</div>
+
+<div class="footer">
+    <button class="btn-action btn-listen" id="spk-btn" onclick="handleSpeakerClick()" title="Tap once: Normal | Twice: 0.5x Speed | Thrice: 0.25x Speed">
+        <span style="font-size:1.3rem">🔊</span>
+        <span style="font-size:0.6rem; font-weight:normal; opacity:0.9; margin-top:-2px;">Tap x2/x3 Slow</span>
+    </button>
+    
+    <button class="btn-action" id="mic-btn" style="background:#ea4335; font-size:1.5rem;" onclick="toggleMic()">🎙️</button>
+    <button class="btn-action btn-hf" id="hf-btn" onclick="toggleHandsfree()">🚗</button>
+    <button class="btn-action btn-next" id="main-btn" onclick="generate()">SKIP ➡️</button>
+</div>
+
+
+<div id="settings-modal" class="modal">
+    <div class="modal-box">
+        <button class="close-x" onclick="saveAndGenerate()">×</button>
+        <h2 style="margin-top:0">Settings</h2>
+
+        <div class="set-group">
+            <div class="set-title">Game Mode</div>
+            <div class="mode-grid">
+                <button class="mode-btn active" onclick="selectMode('numbers')" id="nav-numbers"><span>123</span> Numbers</button>
+                <button class="mode-btn" onclick="selectMode('context')" id="nav-context"><span>💬</span> Context</button>
+                <button class="mode-btn" onclick="selectMode('prices')" id="nav-prices"><span>$$</span> Prices</button>
+                <button class="mode-btn" onclick="selectMode('time')" id="nav-time"><span>🕒</span> Time</button>
+                <button class="mode-btn" onclick="selectMode('dates')" id="nav-dates"><span>📅</span> Dates</button>
+                <button class="mode-btn" onclick="selectMode('gender')" id="nav-gender"><span>🚻</span> Gender</button>
+                <button class="mode-btn" onclick="selectMode('ordinal')" id="nav-ordinal"><span>🥇</span> Ordinals</button>
+                <button class="mode-btn" onclick="selectMode('phone')" id="nav-phone"><span>📱</span> Phone Nos</button>
+                <button class="mode-btn" id="nav-translator" onclick="selectMode('translator')">🔤</button>
+           </div>
+        </div>
+
+        <div class="set-group" style="border: 2px solid var(--secondary); background: rgba(52, 168, 83, 0.05);">
+            <div class="set-title" style="color:var(--secondary)">🚀 Campaign Mode</div>
+            
+            <div class="set-row">
+                <span>Enable Auto-Difficulty</span>
+                <input type="checkbox" id="campaign-toggle" onchange="toggleCampaign()">
+            </div>
+
+            <div id="campaign-controls" style="display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--secondary);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <button class="icon-btn" onclick="adjustLevel(-1)" style="background:white; width:32px; height:32px; box-shadow:0 1px 3px rgba(0,0,0,0.1)">➖</button>
+                    <div style="text-align:center;">
+                        <div style="font-weight:bold; color:var(--text); font-size:1.1rem;">LEVEL <span id="lvl-num">1</span></div>
+                        <div id="lvl-desc" style="font-size:0.8rem; color:var(--secondary); font-weight:bold;">Novice (1-10)</div>
+                    </div>
+                    <button class="icon-btn" onclick="adjustLevel(1)" style="background:white; width:32px; height:32px; box-shadow:0 1px 3px rgba(0,0,0,0.1)">➕</button>
+                </div>
+            </div>
+        </div>
+
+<div class="set-group" id="set-range">
+            <div class="set-title">Manual Options</div>
+
+            <div id="manual-sliders">
+                <div class="set-row">
+                    <span>Min: <span id="lbl-min">1</span></span>
+                   <div style="width:50%"><input type="range" id="minP" min="0" max="6" value="0" oninput="updateRange()"></div>
+                </div>
+
+                <div class="set-row">
+                    <span>Max: <span id="lbl-max">100</span></span>
+                   <div style="width:50%"><input type="range" id="maxP" min="1" max="7" value="2" oninput="updateRange()"></div>
+                </div>
+            </div>
+
+            <div id="modifiers-box" style="margin-top:15px; padding-top:10px; border-top:1px solid #eee;">
+                <div class="set-title">Challenge Modes</div>
+                
+                <div class="set-row">
+                    <span>Negatives (Minws)</span>
+                    <input type="checkbox" id="negatives-toggle">
+                </div>
+
+                <div class="set-row">
+                    <span>Decimals (Pwyntiau)</span>
+                    <input type="checkbox" id="decimal-toggle" onchange="toggleDecimals()">
+                </div>
+                <div id="decimal-opts" class="set-row" style="display:none; font-size:0.9rem; color:#666; padding-left:10px;">
+                    <span>Decimal Places:</span>
+                    <input type="number" id="decimal-places" value="1" min="1" max="2" style="width:50px">
+                </div>
+
+                <div class="set-row">
+                    <span>Fractions (Ffracsiynau)</span>
+                    <input type="checkbox" id="fractions-toggle" onchange="toggleFractions()">
+                </div>
+                <div id="fraction-opts" class="set-row" style="display:none; font-size:0.9rem; color:#666; padding-left:10px;">
+                    <span>Include Mixed (1 ½)</span>
+                    <input type="checkbox" id="mixed-numbers-toggle">
+                </div>
+            </div>
+        </div>
+        
+        <div class="set-group" id="set-prices" style="display:none">
+            <div class="set-title">Price Options</div>
+            <div class="set-row"><span>Include Pence</span><input type="checkbox" id="pence-toggle" checked></div>
+        </div>
+
+        <div class="set-group" id="set-dates" style="display:none">
+            <div class="set-title">Date Options</div>
+            <div class="set-row"><span>Include Year</span><input type="checkbox" id="year-toggle" checked></div>
+            <div class="set-row"><span>Include Day of Week</span><input type="checkbox" id="day-toggle"></div>
+        </div>
+
+        <div class="set-group" id="set-time" style="display:none">
+            <div class="set-title">Time Options</div>
+            <div class="set-row">
+                <span>Style</span>
+                <select id="time-style-sel">
+                    <option value="casual" selected>Casual (Deg i ddeg)</option>
+                    <option value="formal">Formal (Un deg tri pum deg)</option>
+                </select>
+            </div>
+        </div>
+        <div class="set-group" id="set-speech-opts" style="display:none">
+            <div class="set-title">Speaking Topics</div>
+            <div class="set-row"><span>Numbers</span><input type="checkbox" id="speech-numbers" checked></div>
+            <div class="set-row"><span>Prices</span><input type="checkbox" id="speech-prices" checked></div>
+            <div class="set-row"><span>Time</span><input type="checkbox" id="speech-time" checked></div>
+            <div class="set-row"><span>Context</span><input type="checkbox" id="speech-context" checked></div>
+        </div>
+        
+        <div class="set-group" id="set-gameplay">
+            <div class="set-title">Gameplay</div>
+            <div class="set-row">
+                <span>Blind Mode (No Text)</span>
+                <input type="checkbox" id="blind-toggle">
+            </div>
+        </div>
+
+        <div class="set-group" id="set-display">
+            <div class="set-title">Display</div>
+             <div class="set-row">
+                <span>Theme</span>
+                <select id="theme-select" onchange="applyTheme()">
+                    <option value="auto">Auto</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+            <div class="set-row">
+                <span>Button Text</span>
+                <select id="btn-style-sel" onchange="savePrefs(); generate()">
+                    <option value="digits">Digits (Easy)</option>
+                    <option value="words">Welsh Words (Hard)</option>
+                </select>
+            </div>
+            <div class="set-row" id="input-row">
+                <span>Input Style</span>
+                <select id="input-style" onchange="applySettings()">
+                    <option value="4">4 Buttons</option>
+                    <option value="8" selected>8 Buttons</option>
+                    <option value="12">12 Buttons</option>
+                    <option value="type">Typing</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn-check" onclick="saveAndGenerate()">Save & Restart</button>
+
+    </div>
+</div>
+
+<div id="success-modal" class="modal">
+    <div class="modal-box" style="text-align:center;">
+        <h2 style="color:var(--secondary)">🎯  Goal Achieved!</h2>
+        <p class="help-p">You earned 300 XP today. Great job!</p>
+        <button class="btn-check" onclick="document.getElementById('success-modal').style.display='none'">Awesome!</button>
+    </div>
+</div>
+
+<div id="help-modal" class="modal">
+    <div class="modal-box">
+        <button class="close-x" onclick="toggleHelp()">×</button>
+        
+        <div class="tab-header" style="border:none; margin-bottom:20px;">
+            <select id="help-nav-dropdown" onchange="setHelpTab(this.value)" style="width:100%; padding:12px; font-size:1rem; font-weight:bold; border-radius:12px; border:2px solid var(--primary); background:var(--card); color:var(--text);">
+                <option value="guide">📖 User Guide</option>
+                <option value="grammar">🧠 Grammar Rules</option>
+                <option value="gamemodes">🎮 Game Modes</option>
+                <option value="campaign">🚀 Campaign Info</option>
+                <option value="progress">📊 My Stats</option>
+            </select>
+        </div>
+
+       <div id="tab-guide" class="tab-content active">
+            <div class="help-sec">
+                <div class="help-h">🎮 How to Play</div>
+                <p class="help-p">1. Press the 🔊 button, bottom left. Listen to the Welsh number.</p>
+                <p class="help-p">2. Select the matching number/phrase.</p>
+                <p class="help-p">3. Answer quickly for bonus points!</p>
+            </div>
+            
+            <div class="help-sec">
+                <div class="help-h">⚔️ Campaign vs. Practice</div>
+                <div style="background:var(--callout-bg-blue); padding:10px; border-radius:8px; border:1px solid var(--callout-border-blue); margin-bottom:10px;">
+                <p class="help-p" style="margin:0; color:var(--callout-text-blue);"><strong>⭐ Auto Campaign (Recommended)</strong></p>
+                <p class="help-p" style="margin:0; font-size:0.85rem;">The game automatically manages the difficulty, gradually introducing harder numbers and new grammar modes as you level up. Earn Campaign XP to increase your main Rank.</p>
+                </div>
+                <div style="background:var(--callout-bg-red); padding:10px; border-radius:8px; border:1px solid var(--callout-border-red);">
+                <p class="help-p" style="margin:0; color:var(--callout-text-red);"><strong>🏋️ Manual Practice</strong></p>
+                <p class="help-p" style="margin:0; font-size:0.85rem;">Turn off Auto Campaign to use Manual Sliders. You pick the exact number ranges to drill. Earns Practice XP.</p>
+                </div>
+            </div>
+
+            <div class="help-sec">
+                <div class="help-h">🏆 Scoring & XP</div>
+                <p class="help-p"><span class="point-tag pt-green">+10 XP</span> Base Score</p>
+                <p class="help-p"><span class="point-tag pt-green">+5 XP</span> Speed Bonus (< 3s)</p>
+                <p class="help-p"><span class="point-tag pt-red">-5 XP</span> Wrong Answer</p>
+            </div>
+
+            <div class="help-sec">
+                <div class="help-h">⏳ Time Penalties</div>
+                <p class="help-p"><span class="point-tag" style="background:#444; color:white;">> 7s</span> <b>-2 XP</b></p>
+                <p class="help-p"><span class="point-tag" style="background:#000; color:white;">> 13s</span> <b>-4 XP</b></p>
+                <p class="help-p" style="font-size:0.85rem; color:#666; margin-top:5px;"><i>*Answers taking longer than 20s are ignored (assumes you got distracted).</i></p>
+                <p class="help-p" style="font-size:0.85rem; color:var(--error); margin-top:2px;"><i>*Slow correct answers (7s-20s) are marked as "Needs Work".</i></p>
+            </div>
+
+            <div class="help-sec">
+                <div class="help-h">🎹 Controls</div>
+                <p class="help-p"><b>🔊 Toggle:</b> Change audio speed (Fast/Slow/V.Slow) by single, double or triple tap.</p>
+                <p class="help-p"><b>🎤 Mic Button:</b> Speak the answer (Dictation, more points).</p>   
+                <p class="help-p"><b>🚗 Handsfree:</b> Auto-play loop (perfect for driving, no points).</p>
+                <p class="help-p"><b>➡️ Skip:</b> Reveal answer (No points).</p>
+                <p class="help-p"><b>PC:</b> Use keys 1-8 to select answers.</p>
+            </div>
+            
+            <div class="help-sec" style="border-top: 1px solid var(--border); margin-top: 20px; padding-top: 10px;">
+                <div class="help-h">⚠️ Audio & Browser Support</div>
+                <p class="help-p" style="font-size: 0.85rem;"><b>Recommended:</b> Chrome, Edge, Safari, or iOS/MacOS. <br><b>Limited Support:</b> Firefox and Brave may block the Welsh voice engine by default.</p>
+            </div>
+        </div>
+
+         <div id="tab-grammar" class="tab-content">
+            <div class="help-sec">
+                <div class="help-h">1. Initial Consonant Mutations (Treigladau)</div>
+                <p class="help-p">Unlike English where words change at the end (Dog -> Dogs), in Welsh, the <b>beginning</b> of the word changes depending on the number and gender.</p>
+                
+                <ul style="margin-top:10px; padding-left:20px; font-size:0.9rem; color:var(--text); line-height: 1.6;">
+                    <li><strong>Treiglad Meddal (Soft Mutation):</strong> The most common change. It happens after the numbers <b>2</b> (dau/dwy) and to Feminine nouns after <b>1</b> (un).
+                        <ul style="padding-left:15px; margin-top:5px; font-style: italic;">
+                            <li>C changes to G (e.g., Ci -> Dau gi)</li>
+                            <li>P changes to B (e.g., Plant -> Dau blant)</li>
+                            <li>M changes to F (e.g., Merch -> Dwy ferch)</li>
+                        </ul>
+                    </li>
+                    <li style="margin-top:10px;"><strong>Treiglad Llaes (Aspirate Mutation):</strong> Happens after the number <b>3</b> (tri) for Masculine nouns, and the number <b>6</b> (chwe).
+                        <ul style="padding-left:15px; margin-top:5px; font-style: italic;">
+                            <li>C changes to Ch (e.g., Ci -> Tri chi)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="help-sec">
+                <div class="help-h">🚻 2. Gender (Rhyw): 1, 2, 3, and 4</div>
+                <p class="help-p">Nouns in Welsh are either Masculine or Feminine. The numbers 2, 3, and 4 have different forms depending on the noun's gender.</p>
+                <p class="help-p"><b>2:</b> dau (m), dwy (f)</p>
+                <p class="help-p"><b>3:</b> tri (m), tair (f)</p>
+                <p class="help-p"><b>4:</b> pedwar (m), pedair (f)</p>
+            </div>
+            
+            <div class="help-sec">
+                <div class="help-h">3. The 11+ Rule (Modern Counting)</div>
+                <p class="help-p">Modern Welsh counting makes numbers larger than 10 very easy. Instead of complex plural rules, you use the number, add the word <b>"o"</b> (meaning "of"), and use the <b>Soft Mutated Plural</b> of the noun.</p>
+                
+                <ul style="margin-top:10px; padding-left:20px; font-size:0.9rem; color:var(--text); line-height: 1.6;">
+                    <li><strong>1-10:</strong> Number + Singular Noun (e.g., 5 ci).</li>
+                    <li><strong>11+:</strong> Number + "o" + Mutated Plural (e.g., 20 o gŵn).</li>
+                </ul>
+            </div>
+
+            <div class="help-sec">
+                <div class="help-h">🕒 4. Time (Amser)</div>
+                <p class="help-p">Telling time usually utilizes the everyday, casual spoken style to sound natural.</p>
+                <ul style="margin-top:5px; padding-left:20px; font-size:0.9rem; color:var(--text); line-height: 1.6;">
+                    <li><strong>Minutes past:</strong> Read as the minutes + "wedi" (past) + the hour.
+                        <br><span style="font-style: italic; font-size: 0.85rem;">Example: 2:10 is "deg wedi dau".</span>
+                    </li>
+                    <li><strong>Minutes to:</strong> Read as the minutes + "i" (to) + the next hour.
+                        <br><span style="font-style: italic; font-size: 0.85rem;">Example: 1:50 is "deg i ddau".</span>
+                    </li>
+                    <li><strong>Half-past:</strong> Uses the phrase "hanner awr wedi" (half an hour past).
+                        <br><span style="font-style: italic; font-size: 0.85rem;">Example: 2:30 is "hanner awr wedi dau".</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div id="tab-gamemodes" class="tab-content">
+            <p style="font-size:0.9rem; color:#666; margin-bottom:15px;">
+                Each mode targets a specific area of Welsh grammar.
+            </p>
+
+            <div class="set-group">
+                <div class="set-title">123 Numbers</div>
+                <p class="help-p">The core counting mode. Practice the standard Decimal Welsh counting system (Un deg pedwar = 14).</p>
+            </div>
+
+            <div class="set-group">
+                <div class="set-title">💬 Context (Sentences)</div>
+                <p class="help-p">Practice the 11+ Rule ("o" + Mutated Plural) and counting objects in real sentences.</p>
+                <div style="background:var(--callout-bg-orange); padding:8px; border-radius:6px; margin-top:8px; border:1px solid var(--callout-border-orange);"> 
+                    <p class="help-p" style="margin:0; font-size:0.85rem; color:var(--callout-text-orange);"><strong>Why are Digits disabled?</strong> The entire goal of this mode is to practice recognizing the correct mutation (e.g., <em>3 chi</em> vs <em>20 o gŵn</em>). Digits are intentionally disabled so you don't bypass the grammar rule!</p>
+                </div>
+            </div>
+
+           <div class="set-group">
+                <div class="set-title">$$ Prices</div>
+                <p class="help-p">Practice how prices are naturally spoken in everyday shops in Pounds (Punnoedd) and Pence (Ceiniogau).</p>
+            </div>
+
+            <div class="set-group">
+                <div class="set-title">🚻 Gender & Mutations</div>
+                <p class="help-p">Forces you to pick the correct gendered number (e.g., dau vs dwy) and the correctly mutated noun (e.g., cath vs gath vs chath).</p>
+                <div style="background:var(--callout-bg-orange); padding:8px; border-radius:6px; margin-top:8px; border:1px solid var(--callout-border-orange);">
+                 <p class="help-p" style="margin:0; font-size:0.85rem; color:var(--callout-text-orange);"><strong>Why are Digits disabled?</strong> Just like Context mode, you are forced to choose the correctly spelled word that matches the gender of the noun shown on the screen.</p>
+                </div>
+            </div>
+            
+            <div class="set-group">
+                <div class="set-title">🔤 Translator Mode</div>
+                <p class="help-p">Type any number (e.g., "1984" or "2.5") to hear it spoken and see how it is written.</p>
+            </div>
+        </div>
+
+        <div id="tab-campaign" class="tab-content">
+            <p style="font-size:0.9rem; color:#666; margin-bottom:15px;"><strong>Auto Campaign</strong> guides you through 6 levels of difficulty. If you find the game too easy, in the settings tab you can skip to a higher level or switch to Manual mode to work on certain areas.</p>
+            <div class="set-group"><div class="set-title">Lvl 1: Novice (1-200)</div><p class="help-p">The basics. Mastering 1-10 and building decades (un deg, dau ddeg).</p></div>
+            <div class="set-group"><div class="set-title">Lvl 2: Apprentice (200-5,000)</div><p class="help-p"><b>Focus:</b> Hundreds (cant/gant/chant) pattern.<br><b>New:</b> Gender & Prices.</p></div>
+            <div class="set-group"><div class="set-title">Lvl 3: Journeyman (5,000-10,000)</div><p class="help-p"><b>Focus:</b> Thousands (mil/fil).<br><b>New:</b> Time (Clock) & Negative Numbers.</p></div>
+            <div class="set-group"><div class="set-title">Lvl 4: Expert (10,000-20,000)</div><p class="help-p"><b>Focus:</b> Mastery of large numbers.<br><b>New:</b> Dates & Decimals.</p></div>
+            <div class="set-group"><div class="set-title">Lvl 5: Master (20,000-50,000)</div><p class="help-p"><b>Focus:</b> Large scale numbers.<br><b>New:</b> Context (Sentences & Mutations).</p></div>
+            <div class="set-group"><div class="set-title">Lvl 6: Guru (>50,0000)</div><p class="help-p"><b>Final Challenge.</b><br><b>New:</b> Fractions (1/2) & Mixed Numbers.</p></div>
+        </div>
+
+        <div id="tab-progress" class="tab-content">
+            <div id="stats-container"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- PART 1: WELSH DATA DICTIONARY ---
+    const UNITS = ["dim", "un", "dau", "tri", "pedwar", "pump", "chwech", "saith", "wyth", "naw"];
+    const UNITS_FEM = ["dim", "un", "dwy", "tair", "pedair", "pump", "chwech", "saith", "wyth", "naw"];
+    const TENS = ["", "deg", "dau ddeg", "tri deg", "pedwar deg", "pum deg", "chwe deg", "saith deg", "wyth deg", "naw deg"];
+    const HUNDREDS = ["", "cant", "dau gant", "tri chant", "pedwar cant", "pum cant", "chwe chant", "saith cant", "wyth cant", "naw cant"];
+
+    const MONTHS_CY = ["Ionawr", "Chwefror", "Mawrth", "Ebrill", "Mai", "Mehefin", "Gorffennaf", "Awst", "Medi", "Hydref", "Tachwedd", "Rhagfyr"];
+    const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const DAYS_CY = ["Dydd Sul", "Dydd Llun", "Dydd Mawrth", "Dydd Mercher", "Dydd Iau", "Dydd Gwener", "Dydd Sadwrn"];
+    const DAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const ORDINAL_CY = ["", "cyntaf", "ail", "trydydd", "pedwerydd", "pumed", "chweched", "seithfed", "wythfed", "nawfed", "degfed", "unfed ar ddeg", "deuddegfed", "trydydd ar ddeg", "pedwerydd ar ddeg", "pymthegfed", "unfed ar bymtheg", "ail ar bymtheg", "deunawfed", "pedwerydd ar bymtheg", "ugeinfed", "unfed ar hugain", "ail ar hugain", "trydydd ar hugain", "pedwerydd ar hugain", "pumed ar hugain", "chweched ar hugain", "seithfed ar hugain", "wythfed ar hugain", "nawfed ar hugain", "degfed ar hugain", "unfed ar ddeg ar hugain"];
+
+    const FRACTIONS = {
+        2:  "hanner",
+        3:  "traean",
+        4:  "pedwerydd",
+        5:  "pumed",
+        6:  "chweched",
+        7:  "seithfed",
+        8:  "wythfed",
+        9:  "nawfed",
+        10: "degfed",
+        100: "canfed"
+    };
+
+    const RANKS = [
+        { limit: 0, name: "Novice" },
+        { limit: 200, name: "Apprentice" },
+        { limit: 5000, name: "Journeyman" },
+        { limit: 10000, name: "Expert" },
+        { limit: 20000, name: "Master" },
+        { limit: 50000, name: "Guru" }
+    ];
+
+    const PRACTICE_RANKS = [
+        { limit: 0, name: "Tourist" },
+        { limit: 500, name: "Trainee" },
+        { limit: 5000, name: "Grinder" },
+        { limit: 10000, name: "Gym Rat" },
+        { limit: 25000, name: "Veteran" },
+        { limit: 50000, name: "Legend" }
+    ];
+
+    const GENDER_NOUNS = [
+        { word: "ci", pl: "cŵn", form: "m", en: "dog", soft: "gi", asp: "chi", plSoft: "gŵn", logic: "living" },
+        { word: "cath", pl: "cathod", form: "f", en: "cat", soft: "gath", asp: "chath", plSoft: "gathod", logic: "living" },
+        { word: "bachgen", pl: "bechgyn", form: "m", en: "boy", soft: "fachgen", asp: "bachgen", plSoft: "fechgyn", logic: "living" },
+        { word: "merch", pl: "merched", form: "f", en: "girl/woman", soft: "ferch", asp: "merch", plSoft: "ferched", logic: "living" },
+        { word: "plentyn", pl: "plant", form: "m", en: "child", soft: "blentyn", asp: "phlentyn", plSoft: "blant", logic: "living" },
+        { word: "hoelio", pl: "hoelion", form: "m", en: "nail", soft: "hoelio", asp: "hoelio", plSoft: "hoelion", logic: "bulk" },
+        { word: "sgriw", pl: "sgriwiau", form: "f", en: "screw", soft: "sgriw", asp: "sgriw", plSoft: "sgriwiau", logic: "bulk" },
+        { word: "bwrdd", pl: "byrddau", form: "m", en: "table", soft: "fwrdd", asp: "bwrdd", plSoft: "fyrddau", logic: "standard" },
+        { word: "lamp", pl: "lampau", form: "f", en: "lamp", soft: "lamp", asp: "lamp", plSoft: "lampau", logic: "standard" },
+        { word: "ffenestr", pl: "ffenestri", form: "f", en: "window", soft: "ffenestr", asp: "ffenestr", plSoft: "ffenestri", logic: "standard" },
+        { word: "ffôn", pl: "ffonau", form: "m", en: "phone", soft: "ffôn", asp: "ffôn", plSoft: "ffonau", logic: "standard" },
+        { word: "llyfr", pl: "llyfrau", form: "m", en: "book", soft: "lyfr", asp: "llyfr", plSoft: "lyfrau", logic: "standard" },
+        { word: "cwrw", pl: "cyrfau", form: "m", en: "beer", soft: "gwrw", asp: "chwrw", plSoft: "gyrfau", logic: "standard" },
+        { word: "car", pl: "ceir", form: "m", en: "car", soft: "gar", asp: "char", plSoft: "geir", logic: "standard" },
+        { word: "tocyn", pl: "tocynnau", form: "m", en: "ticket", soft: "docyn", asp: "thocyn", plSoft: "docynnau", logic: "standard" },
+        { word: "coffi", pl: "coffïau", form: "m", en: "coffee", soft: "goffi", asp: "choffi", plSoft: "goffïau", logic: "standard" },
+        { word: "te", pl: "teiau", form: "m", en: "tea", soft: "de", asp: "the", plSoft: "deiau", logic: "standard" },
+        { word: "teisen", pl: "teisennau", form: "f", en: "cake/roll", soft: "deisen", asp: "theisen", plSoft: "deisennau", logic: "standard" },
+        { word: "afal", pl: "afalau", form: "m", en: "apple", soft: "afal", asp: "afal", plSoft: "afalau", logic: "standard" },
+        { word: "wy", pl: "wyau", form: "m", en: "egg", soft: "wy", asp: "wy", plSoft: "wyau", logic: "standard" },
+        { word: "bocs", pl: "bocsys", form: "m", en: "box", soft: "focs", asp: "bocs", plSoft: "focsys", logic: "standard" },
+        { word: "cadair", pl: "cadeiriau", form: "f", en: "chair", soft: "gadair", asp: "chadair", plSoft: "gadeiriau", logic: "standard" },
+        { word: "allwedd", pl: "allweddau", form: "f", en: "key", soft: "allwedd", asp: "allwedd", plSoft: "allweddau", logic: "standard" },
+        { word: "plât", pl: "platiau", form: "m", en: "plate", soft: "blât", asp: "phlât", plSoft: "blatiau", logic: "standard" },
+        { word: "drws", pl: "drysau", form: "m", en: "door", soft: "ddrws", asp: "drws", plSoft: "ddrysau", logic: "standard" },
+        { word: "rhosyn", pl: "rhosynnau", form: "m", en: "rose", soft: "rosyn", asp: "rhosyn", plSoft: "rosynnau", logic: "standard" },
+        { word: "twmplin", pl: "twmplenni", form: "m", en: "dumpling", soft: "dwmplin", asp: "thwmplin", plSoft: "dwmplenni", logic: "standard" },
+        { word: "ceiniog", pl: "ceiniogau", form: "f", en: "penny", soft: "geiniog", asp: "cheiniog", plSoft: "geiniogau", logic: "standard" },
+        { word: "litr", pl: "litrau", form: "m", en: "litre", soft: "litr", asp: "litr", plSoft: "litrau", logic: "standard" },
+        { word: "cilogram", pl: "cilogramau", form: "m", en: "kilogram", soft: "gilogram", asp: "chilogram", plSoft: "gilogramau", logic: "standard" }
+    ];
+
+    const GRAMMAR = {
+        "cost": { base: "punt", plSoft: "bunnoedd", phrase: "Mae'n costio [N] [W]", enPhrase: "It costs [N] pounds", max: 1000 },
+        "hours": { base: "awr", plSoft: "oriau", phrase: "Dw i'n aros am [N] [W]", enPhrase: "I wait [N] hours", max: 24 },
+        "people": { base: "person", plSoft: "bobl", phrase: "Mae yna [N] [W] yma", enPhrase: "There are [N] people here", max: 5000 },
+        "distance": { base: "milltir", plSoft: "filltiroedd", phrase: "Rhedais i [N] [W]", enPhrase: "I ran [N] miles", max: 100 }
+    };
+
+    // --- GLOBAL STATE ---
+    let state = { 
+        mode: 'numbers', currentCY: '', currentEN: '', 
+        campaignXP: 0, practiceXP: 0, 
+        dailyXP: 0, dailyGoal: 300, goalMet: false, 
+        streak: 0, solved: false, btnCount: 8, rawData: null, isReview: false, 
+        audioClicks: 0, audioPlaying: false, startTime: 0, needsWork: false, 
+        handsfree: false, speechText: null, wrongGuesses: 0, history: [],
+        genderTarget: null, currentContextKey: null
+    };
+    
+    // --- PERSISTENT DATA ---
+    let mistakes = JSON.parse(localStorage.getItem('mistakes') || "[]");
+    let categoryStats = JSON.parse(localStorage.getItem('catStats') || '{"numbers":0,"context":0,"prices":0,"dates":0,"time":0,"gender":0}');
+    
+    // --- AUDIO & TIMERS ---
+    let autoNextTimer = null;
+    let audioCtx = null;
+    let audioKeepAliveTimer = null;
+    let speakerTaps = 0;
+    let speakerTapTimer = null;
+    let currentUtterance = null;
+    let availableVoices = [];
+    
+    // --- SPEECH RECOGNITION ---
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isListening = false;
+    let userInteracted = false;
+
+    // --- INITIALIZATION ---
+    function init() {
+        state.campaignXP = parseInt(localStorage.getItem('campaignXP') || 0);
+        state.practiceXP = parseInt(localStorage.getItem('practiceXP') || 0);
+        
+        let oldXP = localStorage.getItem('xp');
+        if (oldXP) {
+            state.campaignXP = parseInt(oldXP);
+            localStorage.removeItem('xp');
+        }
+
+        let todayStr = new Date().toDateString();
+        let lastPlay = localStorage.getItem('lastPlayDate');
+        if (lastPlay !== todayStr) {
+            state.dailyXP = 0;
+            state.goalMet = false;
+            localStorage.setItem('lastPlayDate', todayStr);
+            localStorage.setItem('dailyXP', 0);
+        } else {
+            state.dailyXP = parseInt(localStorage.getItem('dailyXP') || 0);
+            if (state.dailyXP >= state.dailyGoal) state.goalMet = true;
+        }
+
+        const savedCamp = localStorage.getItem('campaignMode');
+        const isCamp = savedCamp !== null ? savedCamp === 'true' : true;
+        const campToggle = document.getElementById('campaign-toggle');
+        if (campToggle) {
+            campToggle.checked = isCamp;
+            toggleCampaign(); 
+        }
+
+        // Setup Mic
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'cy-GB';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            
+            recognition.onstart = function() {
+                isListening = true;
+                document.getElementById('mic-btn').style.background = "#34a853";
+                document.getElementById('mc-area').style.display = 'none';
+                document.getElementById('type-area').style.display = 'flex';
+                document.getElementById('type-input').placeholder = "Listening...";
+                
+                const vCtrl = document.getElementById('voice-controls');
+                if(vCtrl) {
+                    vCtrl.style.display = 'block';
+                    vCtrl.innerHTML = "<p style='font-size:1.2rem; font-weight:bold; color:var(--primary); margin:0;'>Listening...</p>";
+                }
+            };
+
+            recognition.onend = function() {
+                isListening = false;
+                document.getElementById('mic-btn').style.background = "#ea4335";
+                document.getElementById('type-input').placeholder = "Type answer...";
+                setTimeout(() => { if (!state.solved) applySettings(); }, 500);
+            };
+
+            recognition.onresult = function(e) { checkVoiceAnswer(e.results[0][0].transcript); };
+        } else {
+             document.getElementById('mic-btn').style.display='none';
+        }
+        
+        loadVoices();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (state.audioPlaying) return; 
+            if (state.solved && state.mode !== 'translator') { if (e.key === 'Enter') generate(); return; }
+            if (document.getElementById('input-style').value === 'type' || state.mode === 'translator' || state.mode === 'dictation') {
+                if (e.key === 'Enter') checkTyped();
+            } else {
+                if (!isNaN(parseInt(e.key)) && e.key !== '0') {
+                    const idx = parseInt(e.key) - 1;
+                    const buttons = document.querySelectorAll('.mc-btn');
+                    if (buttons[idx]) buttons[idx].click();
+                }
+            }
+        });
+        
+        audioKeepAliveTimer = setInterval(keepAudioAwake, 8000); 
+        
+        const unlockEvents = ['click', 'touchstart', 'keydown'];
+        const unlockAudio = () => {
+            if (userInteracted) return;
+            userInteracted = true;            
+            initAudio();
+            let unlockVoice = new SpeechSynthesisUtterance(' ');
+            unlockVoice.volume = 0;
+            window.speechSynthesis.speak(unlockVoice);
+            unlockEvents.forEach(e => document.removeEventListener(e, unlockAudio, { capture: true }));
+        };
+        unlockEvents.forEach(e => document.addEventListener(e, unlockAudio, { capture: true }));
+        
+        updateUI(); 
+        updateRange(); 
+        switchMode('numbers'); 
+    }
+
+    function loadVoices() {
+        availableVoices = window.speechSynthesis.getVoices();
+    }
+
+    if (!state.campLevel) state.campLevel = 1;
+
+    function toggleCampaign() {
+        const isCamp = document.getElementById('campaign-toggle').checked;
+        const controls = document.getElementById('campaign-controls');
+        const sliders = document.getElementById('manual-sliders');
+        
+        if (isCamp) {
+            if(controls) controls.style.display = 'block';
+            if(sliders) sliders.style.display = 'none';
+            updateLevelDisplay(); 
+        } else {
+            if(controls) controls.style.display = 'none';
+            if(sliders) sliders.style.display = 'block';
+        }
+         savePrefs();
+         updateUI();
+    }
+
+    function adjustLevel(dir) {
+        state.campLevel += dir;
+        if (state.campLevel < 1) state.campLevel = 1;
+        if (state.campLevel > 6) state.campLevel = 6;
+        updateLevelDisplay();
+    }
+
+   function updateLevelDisplay() {
+        const numEl = document.getElementById('lvl-num');
+        const descEl = document.getElementById('lvl-desc');
+        if(!numEl || !descEl) return;
+
+        numEl.innerText = state.campLevel;
+        
+        const desc = [
+            "Novice (1-200)", "Apprentice (1-5,000)", "Journeyman (1-10,000)",
+            "Expert (1-20,000)", "Master (1-50,000)", "Guru (1-200,000)"
+        ];
+        descEl.innerText = desc[state.campLevel - 1] || desc[0];
+    }
+    
+    function savePrefs() {
+        const minP = document.getElementById('minP');
+        const maxP = document.getElementById('maxP');
+        if (minP) localStorage.setItem('minP', minP.value);
+        if (maxP) localStorage.setItem('maxP', maxP.value);
+
+        const btnStyle = document.getElementById('btn-style-sel');
+        if (btnStyle) localStorage.setItem('btnStyle', btnStyle.value);
+    }
+    
+    function saveAndGenerate() {
+        savePrefs();
+        toggleSettings(); 
+        generate();
+    }
+    
+    function generate() {
+        if (autoNextTimer) clearTimeout(autoNextTimer);
+        state.solved = false; 
+        state.audioClicks = 0; 
+        state.wrongGuesses = 0;
+        document.getElementById('voice-feedback').innerText = ""; 
+        
+        const cyBox = document.getElementById('cy-text');
+        const enBox = document.getElementById('en-text');
+        cyBox.classList.remove('visible'); 
+        enBox.classList.remove('visible');
+        cyBox.innerHTML = '---'; 
+        enBox.innerText = '???';
+        
+        if (state.isReview) {
+            if (mistakes.length === 0) { 
+                state.isReview = false; 
+                alert("Review Complete! Returning to normal mode."); 
+            } else {
+                document.getElementById('badge-review').style.display = 'block';
+                let m = mistakes[0]; 
+                state.currentCY = m.val; 
+                state.currentEN = m.en; 
+                state.mode = m.mode || 'numbers';
+                cyBox.innerText = state.currentCY; 
+                enBox.innerText = state.currentEN;
+                updateModeUI(state.mode); 
+                applySettings(); 
+                state.startTime = Date.now();
+                if (!state.handsfree) setTimeout(() => { speak(1.0); }, 250);
+                return; 
+            }
+        }
+        document.getElementById('badge-review').style.display = 'none';
+
+        if (state.mode === 'translator') {
+             document.getElementById('cy-text').innerText = "Type a number...";
+             document.getElementById('display-box').classList.add('trans-active');
+             document.getElementById('type-input').value = "";
+             document.getElementById('type-input').focus();
+             document.getElementById('main-btn').style.display = 'none'; 
+             document.getElementById('action-btn').innerText = "TRANSLATE & SPEAK 🔊";
+             return;
+        } else {
+            document.getElementById('display-box').classList.remove('trans-active');
+            document.getElementById('main-btn').style.display = 'flex';
+            document.getElementById('action-btn').innerText = "CHECK ANSWER";
+        }
+
+        const mainBtn = document.getElementById('main-btn');
+        mainBtn.innerText = "SKIP ➡️"; 
+        mainBtn.classList.remove('ready'); 
+        document.getElementById('type-input').value = "";
+        document.getElementById('type-input').style.borderColor = "var(--border)";
+
+        let min = 0, max = 0;
+        const toggleEl = document.getElementById('campaign-toggle');
+        const isCampaign = toggleEl ? toggleEl.checked : false;
+
+        if (isCampaign) {
+            const lvl = state.campLevel || 1;
+            let allowedModes = ['numbers'];
+
+            if (state.mode === 'numbers') {
+                document.getElementById('negatives-toggle').checked = false;
+                document.getElementById('decimal-toggle').checked = false;
+                document.getElementById('fractions-toggle').checked = false;
+                document.getElementById('mixed-numbers-toggle').checked = false;
+                document.getElementById('decimal-opts').style.display = 'none';
+                document.getElementById('fraction-opts').style.display = 'none';
+            }
+
+            if (lvl === 1) { min = 1; max = 200; allowedModes = ['numbers']; }
+            else if (lvl === 2) { min = 1; max = 5000; allowedModes = ['numbers', 'gender', 'prices']; }
+            else if (lvl === 3) { 
+                min = 1; max = 10000; allowedModes = ['numbers', 'gender', 'prices', 'time'];
+                if (state.mode === 'numbers') document.getElementById('negatives-toggle').checked = true;
+            }
+            else if (lvl === 4) { 
+                min = 1; max = 20000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates']; 
+                if (state.mode === 'numbers') {
+                    document.getElementById('negatives-toggle').checked = true;
+                    document.getElementById('decimal-toggle').checked = true;
+                    document.getElementById('decimal-opts').style.display = 'flex';
+                }
+            }
+            else if (lvl === 5) { 
+                min = 1; max = 50000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates', 'context']; 
+                if (state.mode === 'numbers') {
+                    document.getElementById('negatives-toggle').checked = true;
+                    document.getElementById('decimal-toggle').checked = true;
+                    document.getElementById('decimal-opts').style.display = 'flex';
+                }
+            }
+            else { 
+                min = 1; max = 100000000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates', 'context']; 
+                if (state.mode === 'numbers') {
+                    document.getElementById('negatives-toggle').checked = true;
+                    document.getElementById('decimal-toggle').checked = true;
+                    document.getElementById('fractions-toggle').checked = true;
+                    document.getElementById('mixed-numbers-toggle').checked = true;
+                    document.getElementById('decimal-opts').style.display = 'flex';
+                    document.getElementById('fraction-opts').style.display = 'flex';
+                }
+            }
+
+            document.getElementById('lbl-min').innerText = min.toLocaleString();
+            document.getElementById('lbl-max').innerText = max.toLocaleString() + " (Lvl " + lvl + ")";
+
+            let targetMode = allowedModes[allowedModes.length - 1]; 
+            if (allowedModes.length > 1 && Math.random() < 0.4) {
+                targetMode = allowedModes[Math.floor(Math.random() * (allowedModes.length - 1))];
+            }
+
+            if (state.mode !== targetMode) {
+                state.mode = targetMode;
+                updateModeUI(targetMode); 
+            }
+        } else {
+            min = Math.pow(10, document.getElementById('minP').value);
+            max = Math.pow(10, document.getElementById('maxP').value);
+        }
+
+        let newVal, safety=0;
+        do { 
+            newVal = generateRawValue(min, max, state.mode); 
+            safety++; 
+        } while (isRepeated(newVal) && safety < 15);
+        
+        addToHistory(newVal);
+        processValue(newVal, state.mode);
+
+        if (state.mode !== 'gender') {
+             if (state.mode === 'context') cyBox.innerHTML = state.currentCY; 
+             else cyBox.innerText = state.currentCY;
+        }
+        enBox.innerText = state.currentEN;
+
+        const badge = document.getElementById('grammar-badge');
+        if (badge) badge.classList.remove('visible'); 
+
+        if (state.mode === 'context') { 
+            enBox.innerText = "???"; 
+            if (badge) badge.classList.add('visible'); 
+        }
+        else if (state.mode === 'gender') { 
+            cyBox.classList.add('visible'); 
+            if (badge) badge.classList.add('visible'); 
+        }
+        else if (state.mode === 'dates') { 
+            enBox.classList.add('visible'); 
+            if (badge) badge.classList.add('visible'); 
+        }
+        
+        if (document.getElementById('blind-toggle').checked) document.getElementById('badge-blind').style.display = 'block';
+        else document.getElementById('badge-blind').style.display = 'none';
+        
+        document.getElementById('badge-score').style.display = 'none';
+
+        applySettings(); 
+        state.startTime = Date.now();
+        
+        if (state.handsfree) playHandsfreeSequence();
+        else setTimeout(() => { speak(1.0); }, 250);
+    }
+
+   function generateRawValue(min, max, activeMode) {
+        let m = activeMode || state.mode;
+        
+        if (m === 'numbers') {
+            let allowedTypes = [];
+            if (document.getElementById('fractions-toggle').checked) allowedTypes.push('fraction');
+            if (document.getElementById('decimal-toggle').checked) allowedTypes.push('decimal');
+            if (document.getElementById('negatives-toggle').checked) allowedTypes.push('negative');
+            if (allowedTypes.length === 0) allowedTypes.push('integer');
+            
+            let type = allowedTypes[Math.floor(Math.random() * allowedTypes.length)];
+            
+            if (type === 'fraction') {
+                const denoms = [2, 3, 4, 5, 6, 8, 10, 100];
+                let d = denoms[Math.floor(Math.random() * denoms.length)];
+                let n = Math.floor(Math.random() * (d - 1)) + 1; 
+                
+                let integer = 0;
+                if (document.getElementById('mixed-numbers-toggle').checked && Math.random() < 0.5) {
+                    integer = Math.floor(Math.random() * 50) + 1; 
+                }
+                return { n: n, d: d, int: integer, type: 'fraction' };
+            }
+            if (type === 'decimal') {
+                let places = parseInt(document.getElementById('decimal-places').value);
+                let range = max - min;
+                let raw = (Math.random() * range) + min;
+                return parseFloat(raw.toFixed(places));
+            }
+            if (type === 'negative') {
+                let val = Math.floor(Math.random() * max) + 1;
+                return -val; 
+            }
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        } 
+        else if (m === 'context') {
+            const keys = Object.keys(GRAMMAR);
+            const k = keys[Math.floor(Math.random() * keys.length)];
+            state.currentContextKey = k;
+            let localMax = GRAMMAR[k].max || max;
+            if (localMax < min) min = 1; 
+            let n = Math.floor(Math.random() * (localMax - min + 1)) + min;
+            return { val: n, key: k };
+        }
+        else if (m === 'prices') {
+            let n = Math.floor(Math.random() * (max - min + 1)) + min;
+            let pnc = document.getElementById('pence-toggle').checked ? Math.floor(Math.random()*99)+1 : 0;
+            return n + (pnc/100);
+        } 
+        else if (m === 'time') {
+            return { h: Math.floor(Math.random() * 24), m: Math.floor(Math.random() * 12) * 5 };
+        } 
+        else if (m === 'dates') {
+            let d = Math.floor(Math.random() * 30) + 1;
+            let mIdx = Math.floor(Math.random() * 12);
+            let y = Math.floor(Math.random()*25)+2000;
+            let dow = Math.floor(Math.random()*7);
+            return {d, m:mIdx, y, dow};
+        }
+        else if (m === 'phone') {
+            let p1 = Math.floor(Math.random() * 400) + 500; 
+            let p2 = Math.floor(Math.random() * 900) + 100; 
+            let p3 = Math.floor(Math.random() * 900) + 100; 
+            return { p1, p2, p3 };
+        }
+        else if (m === 'ordinal') {
+            return Math.floor(Math.random() * 20) + 1;
+        }
+        else if (m === 'gender') {
+            let noun = GENDER_NOUNS[Math.floor(Math.random() * GENDER_NOUNS.length)];
+            let n = 0;
+            if (noun.logic === 'living') n = Math.floor(Math.random() * 12) + 1;
+            else if (noun.logic === 'ordering') n = Math.floor(Math.random() * 15) + 1;
+            else if (noun.logic === 'bulk') {
+                let roll = Math.random();
+                if (roll < 0.4) n = Math.floor(Math.random() * 50) + 1; 
+                else if (roll < 0.8) n = (Math.floor(Math.random() * 9) + 1) * 50; 
+                else n = (Math.floor(Math.random() * 5) + 1) * 1000; 
+            } else {
+                n = Math.floor(Math.random() * (max - min + 1)) + min;
+                if (n > 20 && Math.random() < 0.3) n = Math.floor(Math.random() * 20) + 1;
+            }
+            return { num: n, noun };
+        }
+    }
+
+    function addToHistory(val) { state.history.push(val); if(state.history.length > 5) state.history.shift(); }
+    function isRepeated(val) { return state.history.some(h => JSON.stringify(h) === JSON.stringify(val)); }
+    function readDecimalPart(str) { return str.split('').map(d => numToCy(parseInt(d))).join(' '); }
+
+    function numToCy(n, isFeminine = false) { 
+        if (isNaN(n)) return "..."; 
+        if (n === 0) return "dim"; 
+        if (n < 0) return "minws " + numToCy(Math.abs(n), isFeminine); 
+        
+        let s = ""; 
+        const uArray = isFeminine ? UNITS_FEM : UNITS;
+
+        if (n >= 1000000) { 
+            let m = Math.floor(n / 1000000); 
+            s += numToCy(m) + " miliwn "; 
+            n %= 1000000; 
+        } 
+        if (n >= 1000) { 
+            let t = Math.floor(n / 1000); 
+            if (t === 1) s += "mil "; else if (t === 2) s += "dwy fil "; else s += numToCy(t) + " mil "; 
+            n %= 1000; 
+        } 
+        if (n >= 100) { s += HUNDREDS[Math.floor(n / 100)] + " "; n %= 100; } 
+        if (n >= 10) { s += TENS[Math.floor(n / 10)] + " "; n %= 10; } 
+        if (n > 0) s += uArray[n]; 
+        
+        return s.trim(); 
+    }
+
+    function getWelshNounForm(n, nounObj) {
+        if (n === 1) return (nounObj.form === 'f' && !nounObj.word.startsWith('ll') && !nounObj.word.startsWith('rh')) ? nounObj.soft : nounObj.word;
+        if (n === 2) return nounObj.soft; 
+        if (n === 3 && nounObj.form === 'm') return nounObj.asp;
+        if (n === 3 && nounObj.form === 'f') return nounObj.word;
+        if (n === 6) return nounObj.asp;
+        if (n <= 10) return nounObj.word; 
+        return "o " + nounObj.plSoft;
+    }
+
+    function timeToCy(h, m, formal) {
+        if (formal) {
+            let hStr = h === 0 ? "dim" : numToCy(h);
+            let mStr = m === 0 ? "" : (m < 10 ? "dim " + numToCy(m) : numToCy(m));
+            return `${hStr} ${mStr}`.trim();
+        } else {
+            let dispH = h % 12;
+            if (dispH === 0) dispH = 12;
+            let hNext = (dispH === 12) ? 1 : dispH + 1;
+
+            if (m === 0) return numToCy(dispH) + " o'r gloch";
+            if (m === 15) return "chwarter wedi " + numToCy(dispH);
+            if (m === 30) return "hanner awr wedi " + numToCy(dispH);
+            if (m === 45) return "chwarter i " + numToCy(hNext);
+            
+            if (m < 30) return numToCy(m) + " wedi " + numToCy(dispH);
+            return numToCy(60 - m) + " i " + numToCy(hNext);
+        }
+    }
+
+    function processValue(val, activeMode) {
+        state.rawData = val;
+        let m = activeMode || state.mode;
+
+        if (m === 'gender') {
+            let n = val.num;
+            let nounObj = val.noun;
+            let numStr = ""; 
+            
+            if (n === 1) numStr = "un";
+            else if (n === 2) numStr = nounObj.form === 'f' ? "dwy" : "dau";
+            else if (n === 3) numStr = nounObj.form === 'f' ? "tair" : "tri";
+            else if (n === 4) numStr = nounObj.form === 'f' ? "pedair" : "pedwar";
+            else if (n === 6) numStr = "chwe"; 
+            else numStr = numToCy(n);
+
+            let nounStr = getWelshNounForm(n, nounObj);
+            
+            state.currentEN = `${n} ${nounObj.en}`; 
+            state.currentCY = `${numStr} ${nounStr}`; 
+            
+            state.genderTarget = numStr; 
+            document.getElementById('cy-text').innerHTML = `<span style="color:#ccc">...</span> <span style="color:var(--text)">${nounObj.en}</span>`; 
+            
+            const badge = document.getElementById('grammar-badge');
+            if (badge) {
+                if(n===2 || (n===1 && nounObj.form==='f')) badge.innerText = "Soft Mutation";
+                else if (n===3 && nounObj.form==='m') badge.innerText = "Aspirate Mutation";
+                else if (n===6) badge.innerText = "Aspirate Mutation";
+                else if (n > 10) badge.innerText = "Rule: 11+ (o + Plural)";
+                else badge.innerText = "Standard";
+                badge.classList.add('visible');
+            }
+            return;
+        }
+
+        if (m === 'context') {
+            let g = GRAMMAR[val.key]; 
+            let n = val.val; 
+            
+            let numTxt = numToCy(n); 
+            let word = (n > 10) ? ("o " + g.plSoft) : g.base; 
+            
+            let fullPhrase = g.phrase.replace('[N]', numTxt).replace('[W]', word);
+            state.currentEN = g.enPhrase.replace('[N]', n); 
+            let visualPhrase = g.phrase.replace('[N]', `<span class="ctx-highlight">${n}</span>`).replace('[W]', word);
+            
+            state.currentCY = visualPhrase; 
+            state.speechText = fullPhrase; 
+            
+            const badge = document.getElementById('grammar-badge');
+            if(badge) {
+                badge.innerText = n > 10 ? "Rule: 11+ (o + Plural)" : "Standard";
+                badge.classList.add('visible');
+            }
+            return;
+        }
+
+        if (val && val.type === 'fraction') {
+            state.currentEN = `${val.n}/${val.d}`;
+            let numText = numToCy(val.n);
+            let denText = FRACTIONS[val.d];
+            state.currentCY = `${numText} ${denText}`;
+            
+            const badge = document.getElementById('grammar-badge');
+            if(badge) {
+                badge.innerText = "FRACTION";
+                badge.classList.add('visible');
+            }
+            return;
+        }
+
+        if (m === 'numbers' || m === 'dictation') {
+            if(m === 'numbers' && document.getElementById('decimal-toggle').checked) { 
+                let s = val.toString(); 
+                if(!s.includes('.')) s += ".0"; 
+                let parts = s.split('.'); 
+                state.currentEN = s; 
+                state.currentCY = `${numToCy(parseInt(parts[0]))} pwynt ${readDecimalPart(parts[1])}`; 
+            } else { 
+                state.currentEN = val.toLocaleString(); 
+                state.currentCY = numToCy(val); 
+            }
+        } 
+        else if (m === 'prices') {
+            let n = Math.floor(val); 
+            let pnc = Math.round((val % 1) * 100);
+            
+            state.currentEN = `£${n}.${pnc.toString().padStart(2,'0')}`;
+            
+            if (n === 0) {
+                state.currentCY = `${numToCy(pnc)} ceiniog`;
+            } else if (pnc === 0) {
+                state.currentCY = `${numToCy(n)} punt`;
+            } else {
+                let pncText = numToCy(pnc);
+                state.currentCY = `${numToCy(n)} punt a ${pncText}`;
+            }
+        } 
+        else if (m === 'phone') {
+            state.currentEN = `${val.p1} ${val.p2} ${val.p3}`;
+            state.currentCY = `${numToCy(val.p1)}, ${numToCy(val.p2)}, ${numToCy(val.p3)}`;
+        }
+        else if (m === 'ordinal') {
+            state.currentEN = val + "th"; 
+            state.currentCY = ORDINAL_CY[val] || val.toString();
+        }
+        else if (m === 'time') {
+            state.currentEN = `${val.h.toString().padStart(2,'0')}:${val.m.toString().padStart(2,'0')}`; 
+            let style = document.getElementById('time-style-sel').value; 
+            state.currentCY = timeToCy(val.h, val.m, style === 'formal');
+        } 
+        else if (m === 'dates') {
+            let includeYear = document.getElementById('year-toggle').checked; 
+            let includeDay = document.getElementById('day-toggle').checked;
+            
+            let enStr = ""; 
+            let cyStr = ""; 
+            
+            if (includeDay) { 
+                enStr += `${DAYS_EN[val.dow]}, `; 
+                cyStr += `${DAYS_CY[val.dow]}, `; 
+            } 
+            
+            enStr += `${MONTHS_EN[val.m]} ${val.d}`; 
+            
+            let dayText = ORDINAL_CY[val.d] || val.d.toString(); 
+            cyStr += `Y ${dayText} o fis ${MONTHS_CY[val.m]}`; 
+            
+            if (includeYear) { 
+                enStr += ` ${val.y}`; 
+                cyStr += ` ${numToCy(val.y)}`; 
+            }
+            
+            state.currentEN = enStr; 
+            state.currentCY = cyStr;
+            
+            const badge = document.getElementById('grammar-badge');
+            if (badge) {
+                badge.innerText = "Date Format";
+                badge.classList.add('visible');
+            }
+        }
+    }
+
+    function applySettings() {
+        if (state.mode === 'translator') { document.getElementById('mc-area').style.display = 'none'; document.getElementById('type-area').style.display = 'flex'; document.getElementById('type-input').setAttribute('type', 'number'); return; }
+        if (state.mode === 'speech') { document.getElementById('mc-area').style.display = 'none'; document.getElementById('type-area').style.display = 'none'; document.getElementById('voice-controls').style.display = 'block'; return; } else { document.getElementById('voice-controls').style.display = 'none'; }
+        let style = document.getElementById('input-style').value;
+        if (style === 'type' || state.mode === 'dictation') { document.getElementById('mc-area').style.display = 'none'; document.getElementById('type-area').style.display = 'flex'; document.getElementById('type-input').setAttribute('type', 'number'); document.getElementById('type-input').focus(); } else { state.btnCount = parseInt(style); document.getElementById('mc-area').style.display = 'grid'; document.getElementById('type-area').style.display = 'none'; let grid = document.getElementById('mc-area'); grid.className = 'mc-grid'; if (state.btnCount === 12) grid.classList.add('cols-3'); else grid.classList.add('cols-2'); generateGrid(); }
+    }
+
+    function generateGrid() {
+        const grid = document.getElementById('mc-area');
+        grid.innerHTML = '';
+        let count = state.btnCount;
+        let answers = [];
+
+        let style = document.getElementById('btn-style-sel').value;
+        let showDigits = (style === 'digits') && (state.mode !== 'gender' && state.mode !== 'context');
+
+        if (state.mode === 'gender') {
+            answers.push({ text: state.currentCY, val: state.rawData.num });
+            let noun = state.rawData.noun;
+            let safety = 0;
+            while(answers.length < count && safety < 200) {
+                safety++;
+                let max = (noun.logic === 'living' || noun.logic === 'ordering') ? 20 : 100; 
+                if (noun.logic === 'bulk') max = 5000;
+                let decoy = Math.floor(Math.random() * max) + 1;
+                if (answers.some(a => a.val === decoy)) continue;
+
+                let numStr = "";
+                if (decoy === 1) numStr = "un";
+                else if (decoy === 2) numStr = noun.form === 'f' ? "dwy" : "dau";
+                else if (decoy === 3) numStr = noun.form === 'f' ? "tair" : "tri";
+                else if (decoy === 4) numStr = noun.form === 'f' ? "pedair" : "pedwar";
+                else if (decoy === 6) numStr = "chwe";
+                else numStr = numToCy(decoy);
+
+                let nounStr = getWelshNounForm(decoy, noun); 
+                answers.push({ text: `${numStr} ${nounStr}`, val: decoy });
+            }
+        }
+        else if (state.mode === 'context') {
+            answers.push({ text: state.speechText, val: state.rawData.val }); 
+            
+            let g = GRAMMAR[state.rawData.key];
+            let target = state.rawData.val;
+            let safety = 0;
+            
+            while(answers.length < count && safety < 200) {
+                safety++;
+                let range = Math.max(5, Math.ceil(target * 0.5));
+                let min = Math.max(1, target - range);
+                let max = Math.max(target + range, min + count + 2); 
+                
+                let decoy = Math.floor(Math.random() * (max - min + 1)) + min;
+                if (answers.some(a => a.val === decoy)) continue;
+
+                let numTxt = numToCy(decoy);
+                let word = (decoy > 10) ? ("o " + g.plSoft) : g.base; 
+                let phrase = g.phrase.replace('[N]', numTxt).replace('[W]', word);
+                answers.push({ text: phrase, val: decoy });
+            }
+        }
+        else {
+            let correctText = showDigits ? state.currentEN : state.currentCY;
+            answers.push({ text: correctText, val: state.rawData });
+            
+            let target = state.rawData;
+            let safety = 0;
+            
+            while (answers.length < count && safety < 200) {
+                safety++;
+                let fakeVal = null;
+                let fakeText = "---";
+
+                if (answers.length === 1 && typeof target === 'number') {
+                    if (target >= 100000) fakeVal = (target % 100000 >= 40000) ? target - 10000 : target + 10000;
+                    else if (target >= 10000) fakeVal = (target % 10000 >= 4000) ? target - 1000 : target + 1000;
+                    else if (target >= 1000) fakeVal = (target % 100 >= 400) ? target - 100 : target + 100;
+                    else if (target >= 100 && target <= 999) fakeVal = (target % 100 >= 40) ? target - 10 : target + 10;
+                    else if (target >= 30 && target <= 49) fakeVal = (target >= 40) ? target - 10 : target + 10;
+                    else if ([13, 14, 15, 16, 17, 18, 19].includes(target)) fakeVal = (target - 10) * 10;
+                    else if ([30, 40, 50, 60, 70, 80, 90].includes(target)) fakeVal = (target / 10) + 10;
+                    else if (target >= 60 && target <= 79) fakeVal = (target >= 70) ? target - 10 : target + 10;
+                    else if (target === 6) fakeVal = 7;
+                    else if (target === 7) fakeVal = 6;
+                }
+
+                if (fakeVal === null && typeof target === 'number') {
+                    let range = Math.max(15, Math.ceil(Math.abs(target) * 0.4));
+                    let min = Math.floor(target - range);
+                    let max = Math.ceil(target + range);
+                    if (!document.getElementById('negatives-toggle').checked && min < 0) min = 0;
+
+                    if (state.mode === 'prices') {
+                        let hasPence = (target % 1 !== 0);
+                        let n = Math.floor(Math.random() * (max - min + 1)) + min;
+                        let pnc = hasPence ? Math.floor(Math.random()*99)+1 : 0;
+                        fakeVal = n + (pnc/100);
+                    } else {
+                        if (target % 1 !== 0) { 
+                            let places = 1; 
+                            fakeVal = parseFloat((Math.random() * (max - min) + min).toFixed(places));
+                        } else {
+                            fakeVal = Math.floor(Math.random() * (max - min + 1)) + min;
+                        }
+                    }
+                } 
+                else if (typeof target === 'object' && fakeVal === null) {
+                    fakeVal = generateRawValue(1, 100, state.mode); 
+                }
+
+                try {
+                    if (fakeVal && fakeVal.type === 'fraction') {
+                        if (showDigits) {
+                            fakeText = (fakeVal.int > 0) ? `${fakeVal.int} ${fakeVal.n}/${fakeVal.d}` : `${fakeVal.n}/${fakeVal.d}`;
+                        } else {
+                            let numText = numToCy(fakeVal.n);
+                            let denText = FRACTIONS[fakeVal.d];
+                            if (fakeVal.int > 0) fakeText = `${numToCy(fakeVal.int)} a ${numText} ${denText}`;
+                            else fakeText = `${numText} ${denText}`;
+                        }
+                    } 
+                    else if (state.mode === 'prices') {
+                        let n = Math.floor(fakeVal); 
+                        let pnc = Math.round((fakeVal % 1) * 100);
+                        if (showDigits) {
+                            fakeText = `£${n}.${pnc.toString().padStart(2,'0')}`;
+                        } else {
+                            if (n === 0) fakeText = `${numToCy(pnc)} ceiniog`;
+                            else if (pnc === 0) fakeText = `${numToCy(n)} punt`;
+                            else fakeText = `${numToCy(n)} punt a ${numToCy(pnc)}`;
+                        }
+                    }
+                    else if (state.mode === 'ordinal') {
+                        fakeText = showDigits ? fakeVal + "th" : (ORDINAL_CY[fakeVal] || fakeVal.toString());
+                    }
+                    else if (state.mode === 'phone') {
+                        if (showDigits) {
+                            fakeText = `${fakeVal.p1} ${fakeVal.p2} ${fakeVal.p3}`;
+                        } else {
+                            fakeText = `${numToCy(fakeVal.p1)}, ${numToCy(fakeVal.p2)}, ${numToCy(fakeVal.p3)}`;
+                        }
+                    }
+                    else if (state.mode === 'time') {
+                        if (showDigits) {
+                            fakeText = `${fakeVal.h.toString().padStart(2,'0')}:${fakeVal.m.toString().padStart(2,'0')}`;
+                        } else {
+                            let style = document.getElementById('time-style-sel').value; 
+                            fakeText = timeToCy(fakeVal.h, fakeVal.m, style === 'formal');
+                        }
+                    }
+                    else if (typeof fakeVal === 'number') {
+                        if (showDigits) {
+                            if (!Number.isInteger(fakeVal)) {
+                                let s = fakeVal.toString(); 
+                                fakeText = s;
+                            } else {
+                                fakeText = fakeVal.toLocaleString();
+                            }
+                        } else {
+                            if (!Number.isInteger(fakeVal)) {
+                                let s = fakeVal.toString(); if(!s.includes('.')) s += ".0"; 
+                                let parts = s.split('.'); 
+                                fakeText = `${numToCy(parseInt(parts[0]))} pwynt ${readDecimalPart(parts[1])}`;
+                            } else {
+                                fakeText = numToCy(fakeVal);
+                            }
+                        }
+                    }
+                    else if (state.mode === 'dates') {
+                         fakeText = "---"; 
+                    }
+                } catch (e) { console.log(e); fakeText = "---"; }
+
+                if (fakeText !== "---" && !answers.some(a => a.text === fakeText)) {
+                    answers.push({ text: fakeText, val: fakeVal });
+                }
+            }
+        }
+        
+        answers.sort(() => Math.random() - 0.5);
+        
+        answers.forEach(item => {
+            const btn = document.createElement('button');
+            btn.className = 'mc-btn';
+            btn.innerText = item.text;
+            btn.onclick = () => {
+                if (item.text === state.currentCY || item.text === state.currentEN) win(btn); else lose(btn);
+            };
+            grid.appendChild(btn);
+        });
+    }
+
+    function check(val, btn) {
+        if (state.solved) return;
+        let target = (state.mode === 'context') ? state.speechText : state.currentCY;
+        let v = val.toString().toLowerCase().trim();
+        let t = target.toString().toLowerCase().trim();
+        let e = state.currentEN.toString().toLowerCase().trim();
+        let isCorrect = (v === t || v === e);
+        if (isCorrect) win(btn); else lose(btn);
+    }
+
+    function checkTyped() {
+        if (state.mode === 'translator') { runTranslator(); return; }
+        if (state.solved) return;
+        let val = document.getElementById('type-input').value.trim().toLowerCase();
+        let correct = (state.mode === 'dictation') ? state.rawData.toString() : state.currentEN.toString().toLowerCase();
+        if (val.replace(/\s/g,'') === correct.replace(/\s/g,'') || val === correct.replace(/,/g, '')) win(null); else lose(null);
+    }
+
+    function checkVoiceAnswer(spoken) {
+        if (state.solved) return;
+        let rawSpoken = spoken.toLowerCase().trim(); let cleanSpoken = rawSpoken.replace(/[.,!?]/g, '');
+        let target = (state.mode === 'context' || state.currentContextKey) ? state.speechText.toLowerCase() : state.currentCY.toLowerCase();
+        let numericMatch = (cleanSpoken == state.rawData); let isCorrect = (cleanSpoken === target) || numericMatch;
+        if (isCorrect) { document.getElementById('voice-feedback').innerText = "Correct! " + cleanSpoken; document.getElementById('voice-feedback').style.color = "var(--secondary)"; win(document.getElementById('mic-btn')); } 
+        else { document.getElementById('voice-feedback').innerText = "Heard: " + rawSpoken; document.getElementById('voice-feedback').style.color = "var(--error)"; document.getElementById('mic-btn').classList.add('wrong'); setTimeout(() => document.getElementById('mic-btn').classList.remove('wrong'), 500); }
+    }
+    function toggleMic() { if (!recognition) { alert("Voice input not supported."); return; } if (isListening) recognition.stop(); else { initAudio(); recognition.start(); } }
+
+    function win(btn) {
+        playSound('correct'); state.solved = true;
+        let timeTaken = (Date.now() - state.startTime) / 1000;
+        let score = 10; 
+        
+        if (state.isReview) {
+            mistakes.shift();
+            localStorage.setItem('mistakes', JSON.stringify(mistakes));
+            score = 5; 
+        } else {
+            if (typeof state.rawData === 'number') { let val = state.rawData; if (!Number.isInteger(val)) score += 3; if (val >= 1000) score += 2; }
+            if (state.mode === 'context') score += 5;
+
+            if (timeTaken > 7 && timeTaken <= 20) { 
+                let struggleEntry = { mode: state.mode, val: state.currentCY, en: state.currentEN, reason: "Slow" }; 
+                mistakes.push(struggleEntry); 
+                if (mistakes.length > 50) mistakes.shift(); 
+                localStorage.setItem('mistakes', JSON.stringify(mistakes)); 
+            }
+        }
+
+        let audioPenalty = state.audioClicks * 2;
+        let timePenalty = 0;
+        
+        if (timeTaken < 3) {
+            score += 5;
+        } else if (timeTaken > 20) {
+            timePenalty = 0;
+        } else if (timeTaken > 13) {
+            timePenalty = 4;
+        } else if (timeTaken > 7) {
+            timePenalty = 2;
+        }
+
+        let totalPenalty = audioPenalty + timePenalty; 
+        if (score - totalPenalty < 1) totalPenalty = score - 1; 
+        score -= totalPenalty;
+        
+        const isCamp = document.getElementById('campaign-toggle').checked;
+        if (isCamp) state.campaignXP += score; else state.practiceXP += score;
+        
+        state.streak++; 
+        categoryStats[state.mode] += score; 
+        if (!state.goalMet) {
+            state.dailyXP += score;
+            localStorage.setItem('dailyXP', state.dailyXP);
+           if (state.dailyXP >= state.dailyGoal) {
+                state.goalMet = true;
+                setTimeout(() => {
+                    fireConfetti();
+                    document.getElementById('success-modal').style.display = 'flex';
+                }, 500);
+            }
+        }
+        saveAllStats();
+        
+        document.getElementById('badge-score').innerText = `+${score}`; 
+        document.getElementById('badge-score').style.display = 'block';
+
+        if (state.streak === 100) fireConfetti(250);
+        else if (state.streak === 50) fireConfetti(150);
+        else if (state.streak % 10 === 0 || state.streak === 5) fireConfetti(40);
+
+        if (state.streak === 50 || state.streak === 100) {
+            const feedback = document.getElementById('voice-feedback');
+            feedback.innerText = `🏆 UNBELIEVABLE! ${state.streak} STREAK! 🏆`;
+            feedback.style.color = "var(--rank-color)";
+        }
+        
+        if(btn) btn.classList.add('correct'); else if(document.getElementById('type-input')) document.getElementById('type-input').style.borderColor = "var(--secondary)";
+        
+        const cyBox = document.getElementById('cy-text'); const enBox = document.getElementById('en-text');
+        cyBox.classList.add('visible'); enBox.classList.add('visible');
+        if (state.mode === 'context') { enBox.innerText = state.currentEN; cyBox.innerHTML = state.speechText; } 
+        else { cyBox.innerText = state.currentCY; enBox.innerText = state.currentEN; }
+        
+        const mainBtn = document.getElementById('main-btn'); mainBtn.innerText = "NEXT >>"; mainBtn.classList.add('ready');
+        if (!state.handsfree) { setTimeout(() => speak(1.0), 400); autoNextTimer = setTimeout(generate, 3000); }
+        updateUI();
+    }
+
+    function lose(btn) {
+        playSound('wrong'); 
+        state.streak = 0; 
+        state.wrongGuesses++;
+        
+        let mistakeEntry = { mode: state.mode, val: state.currentCY, en: state.currentEN, reason: "Wrong" }; 
+        mistakes.push(mistakeEntry); 
+        if (mistakes.length > 50) mistakes.shift(); 
+        localStorage.setItem('mistakes', JSON.stringify(mistakes));
+        
+        if(btn) btn.classList.add('wrong'); 
+        else if(document.getElementById('type-input')) document.getElementById('type-input').style.borderColor = "#d93025";
+        
+        if (!state.handsfree) speak(1.0); 
+        updateUI();
+    }
+    
+    function toggleHandsfree() { state.handsfree = !state.handsfree; let btn = document.getElementById('hf-btn'); if (state.handsfree) { btn.classList.add('active'); document.getElementById('badge-handsfree').style.display = 'block'; initAudio(); generate(); } else { btn.classList.remove('active'); document.getElementById('badge-handsfree').style.display = 'none'; window.speechSynthesis.cancel(); if (autoNextTimer) clearTimeout(autoNextTimer); } }
+    
+    function playHandsfreeSequence() { 
+        if (!state.handsfree) return; 
+        window.speechSynthesis.cancel(); 
+        
+        state.audioPlaying = true;
+        const grid = document.getElementById('mc-area');
+        if (grid) { grid.style.pointerEvents = 'none'; grid.style.opacity = '0.5'; }
+
+        let cyText = (state.mode === 'context') ? state.speechText : state.currentCY; 
+        let enText = state.currentEN; 
+        
+        let u1 = new SpeechSynthesisUtterance(" " + cyText); u1.lang = 'cy-GB'; u1.rate = 1.0; 
+        let u2 = new SpeechSynthesisUtterance(" " + enText); u2.lang = 'en-US'; u2.rate = 1.0; 
+        let u3 = new SpeechSynthesisUtterance(" " + cyText); u3.lang = 'cy-GB'; u3.rate = 0.5; 
+        let u4 = new SpeechSynthesisUtterance(" " + cyText); u4.lang = 'cy-GB'; u4.rate = 1.0; 
+        
+        u4.onend = () => { 
+            state.audioPlaying = false;
+            if (grid) { grid.style.pointerEvents = 'auto'; grid.style.opacity = '1'; }
+            if(state.handsfree) autoNextTimer = setTimeout(generate, 3000); 
+        }; 
+        u4.onerror = () => {
+            state.audioPlaying = false;
+            if (grid) { grid.style.pointerEvents = 'auto'; grid.style.opacity = '1'; }
+        };
+
+        window.speechSynthesis.speak(u1); 
+        window.speechSynthesis.speak(u2); 
+        window.speechSynthesis.speak(u3); 
+        window.speechSynthesis.speak(u4); 
+    }
+
+    function handleSpeakerClick() { speakerTaps++; if (speakerTapTimer) clearTimeout(speakerTapTimer); speakerTapTimer = setTimeout(() => { let rate = 1.0; let msg = ""; if (speakerTaps === 1) { rate = 1.0; } else if (speakerTaps === 2) { rate = 0.5; msg = "🐢 Slow Speed (0.5x)"; } else { rate = 0.25; msg = "🐢🐢 Super Slow (0.25x)"; } if (msg) { let fb = document.getElementById('voice-feedback'); fb.innerText = msg; fb.style.color = "var(--primary)"; setTimeout(() => { if(fb.innerText === msg) fb.innerText = ""; }, 1500); } speak(rate); speakerTaps = 0; }, 300); }
+    
+    function updateModeUI(m) {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        const btn = document.getElementById('nav-'+m);
+        if(btn) btn.classList.add('active');
+
+        let label = m.toUpperCase();
+        if(m==='context') label='SENTENCES';
+        if(m==='translator') label='TRANSLATOR';
+        document.getElementById('mode-label').innerText = label;
+
+        ['range','prices','time','dates','speech-opts'].forEach(id => {
+            const el = document.getElementById('set-'+id);
+            if(el) el.style.display='none';
+        });
+        
+        if (m==='numbers' || m==='context' || m==='gender') document.getElementById('set-range').style.display='block';
+        if (m==='prices') { document.getElementById('set-range').style.display='block'; document.getElementById('set-prices').style.display='block'; }
+        if (m==='time') document.getElementById('set-time').style.display='block';
+        if (m==='dates') document.getElementById('set-dates').style.display='block';
+
+        const modBox = document.getElementById('modifiers-box');
+        if (modBox) modBox.style.display = (m === 'numbers') ? 'block' : 'none';
+        
+        document.getElementById('input-row').style.display = (m==='translator' || m==='gender' || m==='context') ? 'none' : 'flex';
+    }
+
+    function selectMode(m) {
+        state.mode = m;
+        updateModeUI(m);
+    }
+
+    function switchMode(m) { 
+        state.mode = m; 
+        state.history = []; 
+        state.handsfree = false; 
+        document.getElementById('hf-btn').classList.remove('active'); 
+        document.getElementById('badge-handsfree').style.display = 'none'; 
+        
+        updateModeUI(m); 
+        generate(); 
+    }
+
+    function initAudio() {
+        if (!audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.01);
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function keepAudioAwake() { 
+        if (!audioCtx || audioCtx.state !== 'running') return; 
+        const buffer = audioCtx.createBuffer(1, 1, 22050); 
+        const source = audioCtx.createBufferSource(); 
+        source.buffer = buffer; 
+        source.connect(audioCtx.destination); 
+        source.start(0); 
+    }
+
+    let isFirstVoice = true;
+
+    function speak(rate) { 
+        if (!userInteracted) return; 
+        window.speechSynthesis.cancel(); 
+        state.audioPlaying = true;
+        const grid = document.getElementById('mc-area');
+        if (grid) { grid.style.pointerEvents = 'none'; grid.style.opacity = '0.5'; }
+
+        setTimeout(() => { 
+            let txt = (state.mode === 'context' && state.speechText) ? state.speechText : state.currentCY; 
+            currentUtterance = new SpeechSynthesisUtterance(txt); 
+            currentUtterance.lang = 'cy-GB'; 
+            currentUtterance.rate = rate; 
+            
+            const voices = window.speechSynthesis.getVoices();
+            const cyVoice = voices.find(v => v.lang.includes('cy') || v.lang.includes('CY') || v.name.includes('Welsh')); 
+            if (cyVoice) { currentUtterance.voice = cyVoice; }
+
+            currentUtterance.onend = function() { 
+                state.audioPlaying = false;
+                if (grid) { grid.style.pointerEvents = 'auto'; grid.style.opacity = '1'; }
+                currentUtterance = null;
+            }; 
+
+            currentUtterance.onerror = function() { 
+                state.audioPlaying = false;
+                if (grid) { grid.style.pointerEvents = 'auto'; grid.style.opacity = '1'; }
+                currentUtterance = null;
+            };
+
+            window.speechSynthesis.speak(currentUtterance); 
+        }, 250); 
+    }
+
+    function toggleSettings() { let d=document.getElementById('settings-modal'); d.style.display=(d.style.display==='flex')?'none':'flex'; }
+    function toggleHelp() { let d=document.getElementById('help-modal'); if (d.style.display === 'flex') { d.style.display = 'none'; } else { d.style.display = 'flex'; renderStats(); } }
+    function toggleDecimals() { document.getElementById('decimal-opts').style.display=document.getElementById('decimal-toggle').checked?'flex':'none'; }
+    function toggleFractions() { document.getElementById('fraction-opts').style.display=document.getElementById('fractions-toggle').checked?'flex':'none'; }
+    
+    function setHelpTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        const content = document.getElementById('tab-' + tabName);
+        if (content) content.classList.add('active');
+        const dropdown = document.getElementById('help-nav-dropdown');
+        if (dropdown) dropdown.value = tabName;
+        if (tabName === 'progress') renderStats();
+    }
+    
+    function renderStats() {
+        const c = document.getElementById('stats-container');
+        c.innerHTML = '';
+        
+        let currentRank = RANKS[0];
+        let nextRank = RANKS[1];
+        
+        for (let i = 0; i < RANKS.length; i++) {
+            if (state.campaignXP >= RANKS[i].limit) {
+                currentRank = RANKS[i];
+                nextRank = RANKS[i+1] || null;
+            }
+        }
+
+        let pracTitle = PRACTICE_RANKS[0].name;
+        for (let i = PRACTICE_RANKS.length - 1; i >= 0; i--) {
+            if (state.practiceXP >= PRACTICE_RANKS[i].limit) {
+                pracTitle = PRACTICE_RANKS[i].name;
+                break;
+            }
+        }
+
+        let totalXP = state.campaignXP + state.practiceXP;
+        let globalLevel = Math.floor(totalXP / 1000) + 1;
+
+        let progressHTML = '';
+        if (nextRank) {
+            let range = nextRank.limit - currentRank.limit;
+            let current = state.campaignXP - currentRank.limit;
+            let pct = Math.floor((current / range) * 100);
+            if(pct < 5) pct = 5; 
+            progressHTML = `
+                <div style="margin-top:15px; display:flex; justify-content:space-between; font-size:0.8rem; color:#666;">
+                    <span>${currentRank.name.split('(')[0]}</span>
+                    <span>Next: ${nextRank.name.split('(')[0]}</span>
+                </div>
+                <div style="background:#eee; height:10px; border-radius:5px; overflow:hidden; margin-top:5px;">
+                    <div style="width:${pct}%; background:var(--primary); height:100%;"></div>
+                </div>
+                <div style="text-align:right; font-size:0.75rem; color:#999; margin-top:2px;">
+                    ${current}/${range} XP to promote
+                </div>`;
+        } else {
+            progressHTML = `<div style="margin:10px 0; color:gold; font-weight:bold;">🏆 Maximum Rank Achieved!</div>`;
+        }
+
+        c.innerHTML += `
+            <div style="text-align:center; padding:20px; border-bottom:1px solid #eee;">
+                <div style="display:inline-block; background:#333; color:white; padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:bold; margin-bottom:10px;">
+                    PLAYER LEVEL ${globalLevel}
+                </div>
+
+                <div style="font-size:1.4rem; font-weight:bold; color:var(--text); margin-bottom:20px; line-height:1.2;">
+                    ${currentRank.name.split('(')[0]}
+                    <div style="font-size:0.9rem; color:#888; font-weight:normal; margin-top:2px;">
+                        ${pracTitle} (Practice)
+                    </div>
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <div style="flex:1; background:#fff8e1; padding:15px 5px; border-radius:12px; border:1px solid #ffe082;">
+                        <div style="font-size:0.75rem; color:#f57f17; font-weight:bold; letter-spacing:0.5px;">CAMPAIGN</div>
+                        <div style="font-size:1.5rem; font-weight:bold; color:#f57f17;">${state.campaignXP}</div>
+                    </div>
+                    <div style="flex:1; background:#e8f0fe; padding:15px 5px; border-radius:12px; border:1px solid #d2e3fc;">
+                        <div style="font-size:0.75rem; color:#1967d2; font-weight:bold; letter-spacing:0.5px;">PRACTICE</div>
+                        <div style="font-size:1.5rem; font-weight:bold; color:#1967d2;">${state.practiceXP}</div>
+                    </div>
+                </div>
+                
+                <div style="font-size:0.9rem; color:#555; margin-bottom:10px;">
+                    Total Combined XP: <strong>${totalXP}</strong>
+                </div>
+
+                ${progressHTML}
+            </div>
+        `;
+
+        c.innerHTML += `
+            <div style="background:#e8f0fe; padding:15px; border-radius:12px; margin:20px 0; text-align:center; border:1px solid #d2e3fc;">
+                <h3 style="color:#1967d2; margin:0 0 5px 0;">🏋️ Practice Score</h3>
+                <div style="font-size:1.5rem; font-weight:bold; color:#1967d2;">${state.practiceXP} XP</div>
+                <div style="font-size:0.8rem; color:#666;">Earned in Manual Mode</div>
+            </div>
+        `;
+
+        if (mistakes.length > 0) {
+            let html = `<div style="margin-top:20px;"><h3 style="color:#d93025; border-bottom:2px solid #fce8e6; padding-bottom:5px;">⚠️ Recent Mistakes</h3>`;
+            mistakes.slice().reverse().slice(0, 5).forEach(m => {
+                html += `<div style="background:#fff0f0; padding:10px; margin-bottom:8px; border-radius:8px; border-left:4px solid #d93025;">
+                    <div style="font-weight:bold; color:#333;">${m.val}</div>
+                    <div style="font-size:0.9rem; color:#555;">${m.en}</div>
+                    <div style="font-size:0.8rem; color:#d93025; margin-top:2px;">${m.reason || "Wrong"}</div>
+                </div>`;
+            });
+            html += `</div>`;
+            c.innerHTML += html;
+        }
+
+        let catsHTML = `<div style="margin-top:20px;"><h3 style="border-bottom:2px solid #eee; padding-bottom:5px;">📊 Topic Mastery</h3>`;
+        for (const [key, val] of Object.entries(categoryStats)) {
+            let lvl = Math.floor(val / 1000) + 1;
+            let label = key.toUpperCase();
+            if(key === 'context') label = 'SENTENCES';
+            if(key === 'dictation') continue; 
+            if (val === 0) continue; 
+
+            catsHTML += `
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:0.9rem; margin-top:10px;">
+                    <span>${label} <span style="color:#aaa;">(Lvl ${lvl})</span></span>
+                    <span>${val} pts</span>
+                </div>
+                <div style="background:#eee; height:6px; border-radius:3px;">
+                    <div style="width:${Math.min(100, (val % 1000)/10)}%; background:var(--secondary); height:100%;"></div>
+                </div>
+            `;
+        }
+        catsHTML += `</div>`;
+        c.innerHTML += catsHTML;
+    }
+    
+    function startReview() {
+        if (mistakes.length === 0) { alert("Great job! No mistakes to review."); return; }
+        state.isReview = true;
+        toggleHelp(); 
+        generate();   
+    }
+
+    function fireConfetti(amount = 40) { 
+        const colors = ['#fbbc04', '#ea4335', '#34a853', '#4285f4'];
+        for (let i = 0; i < amount; i++) {
+            const c = document.createElement('div');
+            c.className = 'confetti';
+            c.style.left = Math.random() * 100 + 'vw';
+            c.style.background = colors[Math.floor(Math.random() * colors.length)];
+            c.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            c.style.opacity = Math.random();
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), 5000);
+        }
+    }
+    
+    function clearMistakes() { if(confirm("Clear your 'Needs Work' list?")) { localStorage.setItem('mistakes', "[]"); mistakes = []; renderStats(); } }
+    
+    function updateRange() { 
+        let min=document.getElementById('minP').value, max=document.getElementById('maxP').value; 
+        if(parseInt(max)<=parseInt(min)) { max=parseInt(min)+1; document.getElementById('maxP').value=max; } 
+        document.getElementById('lbl-min').innerText=Math.pow(10,min).toLocaleString(); 
+        document.getElementById('lbl-max').innerText=Math.pow(10,max).toLocaleString(); 
+    }
+
+   function saveAllStats() { 
+        localStorage.setItem('campaignXP', state.campaignXP); 
+        localStorage.setItem('practiceXP', state.practiceXP); 
+        localStorage.setItem('catStats', JSON.stringify(categoryStats)); 
+    }
+
+    function resetProgress() { 
+        if(confirm("Reset?")) { 
+            state.xp=0; state.streak=0; categoryStats={numbers:0,context:0,prices:0,dates:0,time:0,gender:0}; 
+            localStorage.clear(); location.reload(); 
+        } 
+    }
+
+    function playTone(freq, type, dur, vol) {
+        initAudio(); 
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+    }
+
+    function playSound(type) { 
+        initAudio(); 
+        if (type === 'correct') { 
+            let s = state.streak;
+            let step = s < 5 ? s : (s >= 5 && s < 10 ? s - 5 : s % 10);
+            const majorScale = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16]; 
+            let semitones = majorScale[step] || 0;
+            let pitchMult = Math.pow(1.059463, semitones);
+
+            playTone(523.25 * pitchMult, 'sine', 0.3, 0.15); 
+            setTimeout(() => playTone(659.25 * pitchMult, 'sine', 0.4, 0.15), 100); 
+        } else { 
+            playTone(150, 'triangle', 0.2, 0.2); 
+            setTimeout(() => playTone(100, 'triangle', 0.3, 0.2), 80); 
+        } 
+    }
+
+    function playFanfare(milestone) {
+        initAudio();
+        const now = audioCtx.currentTime;
+        const notes = milestone === 100 ? [523.25, 659.25, 783.99, 1046.50] : [261.63, 329.63, 392.00, 523.25];
+        const volume = 0.15;
+
+        notes.forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'triangle'; 
+            osc.frequency.setValueAtTime(freq, now + (i * 0.1)); 
+            
+            gain.gain.setValueAtTime(0, now + (i * 0.1));
+            gain.gain.linearRampToValueAtTime(volume, now + (i * 0.1) + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + (i * 0.1) + 0.5);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now + (i * 0.1));
+            osc.stop(now + (i * 0.1) + 0.5);
+        });
+    }
+    
+    function runTranslator() { 
+        let n=parseInt(document.getElementById('type-input').value); 
+        if(isNaN(n)) return; 
+        let txt=numToCy(n); 
+        state.currentCY = txt; 
+        document.getElementById('cy-text').innerText = txt; 
+        window.speechSynthesis.cancel(); 
+        setTimeout(()=>{ let u=new SpeechSynthesisUtterance(" "+txt); u.lang='cy-GB'; window.speechSynthesis.speak(u); },10); 
+    }
+   
+    function applyTheme() { 
+        const t=document.getElementById('theme-select').value; 
+        document.body.className=''; 
+        if(t==='dark')document.body.classList.add('force-dark'); 
+        if(t==='light')document.body.classList.add('force-light'); 
+    }
+    
+    function updateUI() { 
+        let campTitle = RANKS[0].name;
+        for(let i=RANKS.length-1; i>=0; i--) {
+            if (state.campaignXP >= RANKS[i].limit) {
+                campTitle = RANKS[i].name;
+                break;
+            }
+        }
+
+        let pracTitle = PRACTICE_RANKS[0].name;
+        for(let i=PRACTICE_RANKS.length-1; i>=0; i--) {
+            if (state.practiceXP >= PRACTICE_RANKS[i].limit) {
+                pracTitle = PRACTICE_RANKS[i].name;
+                break;
+            }
+        }
+
+        const isCamp = document.getElementById('campaign-toggle') ? document.getElementById('campaign-toggle').checked : false;
+        const xpBox = document.querySelector('.stat-item[title="XP"]');
+        const rankDisplay = document.getElementById('rank-display');
+
+        if (isCamp) {
+            if(xpBox) xpBox.innerHTML = `⭐ <span id="xp-display">${state.campaignXP}</span>`;
+            if(rankDisplay) rankDisplay.innerText = campTitle.split(' (')[0]; 
+        } else {
+            if(xpBox) xpBox.innerHTML = `🏋️ <span id="xp-display">${state.practiceXP}</span>`;
+            if(rankDisplay) rankDisplay.innerText = pracTitle.split(' (')[0]; 
+        }
+
+        const streakBox = document.querySelector('.stat-item[title="Streak"]');
+        if(streakBox) streakBox.innerHTML = `🔥 <span id="streak-display">${state.streak}</span>`;
+
+        const dailyBox = document.getElementById('daily-display');
+        if (dailyBox) {
+            if (state.goalMet) {
+                dailyBox.innerHTML = `<span style="color:var(--secondary)">Done! ✔️</span>`;
+            } else {
+                dailyBox.innerText = `${state.dailyXP}/${state.dailyGoal}`;
+            }
+        }
+    }
+</script>
+
+<style>
+        :root { --primary: #1a73e8; --secondary: #34a853; --bg: #f8f9fa; --card: #ffffff; --text: #202124; --border: #dadce0; --error: #d93025; --rank-color: #fbbc04; --header-h: 50px; --callout-bg-blue: #f0f7ff;
+    --callout-border-blue: #cce5ff;
+    --callout-text-blue: #0056b3;
+    
+    --callout-bg-red: #fcf4f4;
+    --callout-border-red: #f8d7da;
+    --callout-text-red: #721c24;
+
+    --callout-bg-orange: #fff3e0;
+    --callout-border-orange: #ffe0b2;
+    --callout-text-orange: #e65100;
+        } 
+        @media (prefers-color-scheme: dark) {
+            :root { --primary: #8ab4f8; --secondary: #81c995; --bg: #121212; --card: #1e1e1e; --text: #e8eaed; --border: #3c4043; --error: #f28b82; --rank-color: #fdd663; --callout-bg-blue: #0d1b2a;
+        --callout-border-blue: #1b3a57;
+        --callout-text-blue: #a3cfbb;
+
+        --callout-bg-red: #2d1616;
+        --callout-border-red: #5c2b2b;
+        --callout-text-red: #f8d7da;
+
+        --callout-bg-orange: #2b1b0a;
+        --callout-border-orange: #52361b;
+        --callout-text-orange: #ffcc80; }
+        }
+        body.force-dark { --primary: #8ab4f8; --secondary: #81c995; --bg: #121212; --card: #1e1e1e; --text: #e8eaed; --border: #3c4043; --error: #f28b82; --rank-color: #fdd663; }
+        body.force-light { --primary: #1a73e8; --secondary: #34a853; --bg: #f8f9fa; --card: #ffffff; --text: #202124; --border: #dadce0; --error: #d93025; --rank-color: #fbbc04; }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body { font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        .brand-header {
+        display: flex;
+         align-items: center;
+         justify-content: center;
+          position: relative;
+         background: linear-gradient(to bottom, #ffffff 50%, #00b140 50%); /* Using a nod to the Welsh Dragon Green instead of Polish Red */
+        width: 100%;
+        padding: 15px 0;
+        height: 60px;
+        z-index: 10;
+        }
+
+        .header-controls-left { position: absolute; left: 10px; display: flex; }
+        .header-controls-right { position: absolute; right: 10px; display: flex; }
+
+        .brand-header .icon-btn {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            border: 1px solid var(--border);
+        }
+
+        .brand-title {
+            background: rgba(255,255,255,0.95);
+            color: #202124;
+            display: inline-block;
+            padding: 4px 15px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            text-transform: uppercase;
+        }
+
+        .status-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 8px 15px; 
+            background: var(--card); 
+            border-bottom: 1px solid var(--border); 
+            height: var(--header-h); 
+            flex-shrink: 0; 
+            font-size: 0.9rem;
+        }
+        .stats-group { display: flex; gap: 15px; align-items: center; font-weight: 700; }
+        .stat-item { display: flex; align-items: center; gap: 4px; }
+        .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 5px; color: var(--text); border-radius: 50%; transition: background 0.2s; }
+        .icon-btn:active { background: rgba(0,0,0,0.1); }
+
+        .game-area { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; width: 100%; position: relative; }
+        
+        .display-box { 
+            text-align: center; margin-bottom: 20px; min-height: 140px; 
+            display: flex; flex-direction: column; justify-content: center; 
+            background: var(--card); border-radius: 16px; padding: 20px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); 
+            position: relative; transition: border-color 0.3s;
+        }
+        .mode-label { position: absolute; top: 10px; left: 12px; font-size: 0.7rem; text-transform: uppercase; color: #888; font-weight: 700; letter-spacing: 1px; }
+        
+        .pl-text { font-size: 1.5rem; color: var(--primary); font-weight: 800; margin-bottom: 8px; visibility: hidden; line-height: 1.3; word-wrap: break-word; }
+        .en-text { font-size: 1.1rem; color: #888; visibility: hidden; font-weight: 500; min-height: 1.5rem; }
+        .visible { visibility: visible !important; animation: popIn 0.3s; }
+        .blind-active { opacity: 0; }
+        
+        .trans-active .pl-text { visibility: visible; color: var(--text); font-size: 1.3rem; }
+        .trans-active .en-text { display: none; }
+        
+        .ctx-prefix, .ctx-suffix { color: var(--text); font-weight: 400; opacity: 0.7; font-size: 0.9em; }
+        .ctx-highlight { color: var(--primary); font-weight: 800; border-bottom: 2px solid rgba(26, 115, 232, 0.3); }
+
+        .badge { position: absolute; top: 10px; right: 10px; font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; font-weight: bold; display: none; }
+        .badge-review { background: #e37400; color: white; }
+        
+        .badge-score { 
+            background: var(--secondary); color: white; 
+            display: none; top: 45%; left: 50%; transform: translate(-50%, -50%); 
+            font-size: 2rem; z-index: 20; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3); border-radius: 12px;
+            padding: 10px 20px;
+            animation: scorePop 0.5s forwards; 
+        }
+        .badge-blind { left: auto; right: 10px; top: auto; bottom: 10px; background: #607d8b; color: white; display: none; } 
+        .badge-handsfree { 
+            position: absolute; bottom: 10px; left: 10px; 
+            background: #673ab7; color: white; font-size: 0.75rem; padding: 4px 8px; 
+            border-radius: 6px; font-weight: bold; display: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .mc-grid { display: grid; gap: 12px; flex-grow: 1; align-content: start; margin-bottom: 100px; }
+        .cols-2 { grid-template-columns: 1fr 1fr; }
+        .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        
+        .mc-btn { 
+            position:relative; background: var(--card); border: 1px solid var(--border); border-bottom-width: 3px;
+            border-radius: 12px; min-height: 65px; font-weight: 700; font-size: 0.95rem; color: var(--text); 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px; 
+            transition: transform 0.1s, border-bottom-width 0.1s, margin-top 0.1s; word-break: break-word; text-align: center;
+        }
+        .mc-btn:active { transform: translateY(2px); border-bottom-width: 1px; margin-top: 2px; }
+        .mc-key-hint { position: absolute; top: 4px; left: 6px; font-size: 0.65rem; color: var(--primary); opacity: 0.6; }
+        
+        .correct { background: var(--secondary) !important; color: white !important; border-color: var(--secondary) !important; }
+        .wrong { background: var(--error) !important; color: white !important; opacity: 0.6; }
+
+        .type-container { display: none; flex-direction: column; gap: 15px; margin-top: 10px; }
+        .type-input { width: 100%; padding: 15px; font-size: 1.4rem; text-align: center; border: 2px solid var(--border); border-radius: 12px; background: var(--card); color: var(--text); outline: none; }
+        .type-input:focus { border-color: var(--primary); }
+        .btn-check { width: 100%; background: var(--primary); color: white; padding: 15px; border-radius: 12px; font-weight: bold; border: none; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.2); }
+
+        .footer { 
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); padding: 15px; 
+            border-top: 1px solid var(--border); display: grid; gap: 12px; z-index: 100; height: 85px; 
+            grid-template-columns: 2fr 1fr 1fr 1fr; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); 
+        }
+        .btn-action { 
+            border: none; border-radius: 12px; font-weight: 700; font-size: 0.9rem; color: white; cursor: pointer; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        }
+        .btn-listen { background: var(--secondary); font-size: 1.8rem; transition: transform 0.1s; }
+        .btn-listen:active { transform: scale(0.95); }
+        
+        .btn-hf { background: #673ab7; font-size: 1.6rem; }
+        .btn-hf.active { background: #d32f2f; animation: pulse 1.5s infinite; }
+        
+        .btn-next { background: #5f6368; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; transition: background 0.3s; }
+        .btn-next.ready { background: var(--primary); }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-box { background: var(--card); width: 95%; max-width: 420px; padding: 25px; border-radius: 24px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.25); }
+        .close-x { 
+            position: absolute; top: 20px; right: 20px; font-size: 1.5rem; 
+            background: var(--bg); width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; color: var(--text); 
+            display:flex; align-items:center; justify-content:center; 
+            border: 1px solid var(--border);
+        }
+        
+        .set-group { background: var(--bg); padding: 15px; border-radius: 16px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .set-title { font-weight: 800; color: var(--primary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+        .set-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.95rem; font-weight: 600; }
+        .set-row:last-child { margin-bottom: 0; }
+        
+        .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .mode-btn { padding: 10px; border: 2px solid var(--border); background: var(--card); border-radius: 10px; font-weight: 600; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
+        .mode-btn.active { border-color: var(--primary); background: rgba(26, 115, 232, 0.1); color: var(--primary); }
+        .mode-btn span { font-size: 1.1rem; }
+
+        .help-sec { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .help-sec:last-child { border: none; }
+        .help-h { font-size: 1rem; color: var(--primary); margin-bottom: 8px; font-weight: 800; }
+        .help-p { font-size: 0.9rem; line-height: 1.5; color: var(--text); margin-bottom: 6px; opacity: 0.9; }
+        .point-tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; background: #eee; color: #333; margin-right: 5px; }
+        .pt-green { background: var(--secondary); color: white; }
+        .pt-red { background: var(--error); color: white; }
+        
+        select, input[type=checkbox] { cursor: pointer; accent-color: var(--primary); }
+        select { padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 0.9rem; }
+        input[type=range] { width: 100%; accent-color: var(--primary); }
+
+        @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes scorePop { 
+            0% { opacity: 0; transform: translate(-50%, -20%) scale(0.5); } 
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 
+            100% { opacity: 0; transform: translate(-50%, -80%) scale(0.8); } 
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        .confetti { position: fixed; top: -10px; width: 10px; height: 10px; border-radius: 50%; animation: fall linear forwards; z-index: 9999; pointer-events: none; }
+        @keyframes fall { to { transform: translateY(105vh) rotate(720deg); } }
+        .btn-review { width:100%; padding:10px; margin-top:10px; background:var(--text); color:var(--bg); border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
+    
+        .grammar-badge { font-size: 0.85rem; color: #ffa726; margin-top: -5px; margin-bottom: 10px; font-weight: bold; letter-spacing: 0.5px; opacity: 0; transition: opacity 0.3s; }
+        .grammar-badge.visible { opacity: 1; }
+        .tab-header { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+        .tab-btn { flex: 1; background: none; border: none; padding: 12px; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+        .tab-btn:hover { background: rgba(0,0,0,0.03); }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .tab-content { display: none; animation: popIn 0.3s; }
+        .tab-content.active { display: block; }
+
+        .modal-content { background-color: var(--bg); color: var(--text); padding: 20px; border-radius: 15px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+
+        .help-p, .help-sec { color: var(--text) !important; line-height: 1.6; opacity: 0.9; }
+
+        #tab-grammar ul li { color: var(--text) !important; }
+
+        .help-h { color: var(--secondary); font-weight: bold; margin-bottom: 8px; }
+    </style>
+</body>
+</html>
