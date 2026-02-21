@@ -34,10 +34,10 @@
 
 <div class="status-bar">
     <div class="stats-group">
-        <div class="stat-item" title="Profiad (XP)">⭐ <span id="xp-display">0</span></div>
-        <div class="stat-item" title="Rhes">🔥 <span id="streak-display">0</span></div>
-        <div class="stat-item" title="Nod Dyddiol">🎯 <span id="daily-display">0/300</span></div>
-        <div class="stat-item" title="Safle">🏆 <span id="rank-display">Dechreuwr</span></div>
+        <div class="stat-item" id="stat-xp" title="Profiad (XP)">⭐ <span id="xp-display">0</span></div>
+        <div class="stat-item" id="stat-streak" title="Rhes">🔥 <span id="streak-display">0</span></div>
+        <div class="stat-item" id="stat-daily" title="Nod Dyddiol">🎯 <span id="daily-display">0/300</span></div>
+        <div class="stat-item" id="stat-rank" title="Safle">🏆 <span id="rank-display">Dechreuwr</span></div>
     </div>
 </div>
 
@@ -298,11 +298,66 @@
                 <p class="help-p"><b>PC:</b> Use keys 1-8 to select answers.</p>
             </div>
             
-            <div class="help-sec" style="border-top: 1px solid var(--border); margin-top: 20px; padding-top: 10px;">
+           <div class="help-sec" style="border-top: 1px solid var(--border); margin-top: 20px; padding-top: 10px;">
                 <div class="help-h">⚠️ Audio & Browser Support</div>
-                <p class="help-p" style="font-size: 0.85rem;"><b>Recommended:</b> Chrome, Edge, Safari, or iOS/MacOS. <br><b>Limited Support:</b> Firefox and Brave may block the Welsh voice engine by default.</p>
+                <p class="help-p" style="font-size: 0.85rem;"><b>Recommended:</b> Chrome, Edge, or Safari. <br><b>Limited Support:</b> Firefox and Brave may block the Welsh voice engine by default.</p>
+                <p class="help-p" style="font-size: 0.85rem; margin-top: 8px;"><b>If silent:</b>
+                <br>• Tap the screen once to "wake up" the audio engine.
+                <br>• <b>Android and Apple Users:</b> See notes below on downloading the Welsh voice pack.
+                <br>• <b>Linux Users:</b> Ensure <code>espeak-ng</code> is installed via terminal.
+                <br>• <b>Brave Users:</b> Disable "Shields" or "Fingerprinting Protection" for this site.
+                <br>• <b>Firefox:</b> Go to <i>Settings > Privacy > Autoplay</i> and allow Audio.</p>
             </div>
-        </div>
+
+            <div class="help-section" style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.03); border-radius: 12px; border: 1px solid var(--border);">
+                <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                    <span>🔊</span> Setup Welsh Voice (Android)</h3>
+                <p style="font-size: 0.9rem; line-height: 1.4; margin-bottom: 12px;">
+                    Chrome and Samsung Internet rely on <b>Google Speech Services</b>. To hear a clear Welsh voice, you need to download the language pack manually:</p>
+                
+                <ol style="font-size: 0.85rem; padding-left: 20px; line-height: 1.6;">
+                    <li>Open your phone <b>Settings</b>.</li>
+                    <li>Go to <b>General Management</b> > <b>Language and Input</b> (or <i>System > Languages</i>).</li>
+                    <li>Tap on <b>Text-to-speech output</b>.</li>
+                    <li>Ensure <b>Speech Services by Google</b> is selected.</li>
+                    <li>Tap the <b>Settings (cog)</b> icon next to it.</li>
+                    <li>Tap <b>Install voice data</b>.</li>
+                    <li>Find <b>Welsh (United Kingdom)</b> and tap the download icon.</li>
+                </ol>
+
+                <div style="margin-top: 10px; padding: 10px; background: #fffbe6; border-left: 4px solid #ffe58f; border-radius: 4px; font-size: 0.8rem;">
+                    <strong>Tip:</strong> If it sounds robotic, ensure you have downloaded the "High Quality" version of the Welsh pack if available.
+                </div>
+
+                <button class="btn-review" onclick="speechSynthesis.speak(new SpeechSynthesisUtterance('Mae hyn yn gweithio\'n dda'))" style="margin-top:10px; background:var(--primary); color:white; width:100%; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">
+                    Test Audio (Welsh)
+                </button>
+            </div>
+
+            <div class="help-section" style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.03); border-radius: 12px; border: 1px solid var(--border);">
+                <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                    <span>🍎</span> Setup Welsh Voice (Apple iOS)</h3>
+                <p style="font-size: 0.9rem; line-height: 1.4; margin-bottom: 12px;">
+                    Safari relies on system-level voices. If the audio is missing or sounds robotic, you must download the <b>cy-GB</b> language pack manually:</p>
+                
+                
+                <ol style="font-size: 0.85rem; padding-left: 20px; line-height: 1.6;">
+                    <li>Open your iPhone/iPad <b>Settings</b>.</li>
+                    <li>Go to <b>Accessibility</b> > <b>Spoken Content</b>.</li>
+                    <li>Tap on <b>Voices</b>.</li>
+                    <li>Scroll down and select <b>Welsh</b>.</li>
+                    <li>Tap the <b>Cloud (download)</b> icon next to <i>Geraint</i> or <i>Siri</i>.</li>
+                    <li><b>Important:</b> Fully close Safari and reopen the app for the new voice to take effect.</li>
+                </ol>
+
+                <div style="margin-top: 10px; padding: 10px; background: #fffbe6; border-left: 4px solid #ffe58f; border-radius: 4px; font-size: 0.8rem;">
+                    <strong>Tip:</strong> Ensure the <b>Physical Silent Switch</b> on the side of your iPhone is turned OFF. Apple often blocks web audio while in Silent Mode.
+                </div>
+
+                <button class="btn-review" onclick="speechSynthesis.speak(new SpeechSynthesisUtterance('Mae hyn yn gweithio\'n dda'))" style="margin-top:10px; background:var(--primary); color:white; width:100%; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">
+                    Test Audio (Apple Welsh)
+                </button>
+            </div>
 
          <div id="tab-grammar" class="tab-content">
             <div class="help-sec">
@@ -524,8 +579,39 @@
     let availableVoices = [];
     
     // --- SPEECH RECOGNITION ---
+   
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
+    let recognition;
+
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = 'cy-GB'; // Setting to Welsh
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        // Handle Samsung/Google Service specific errors
+        recognition.onerror = (event) => {
+            if (event.error === 'service-not-allowed') {
+                alert("Gwall: Gwiriwch fod yr ap Google wedi'i alluogi a bod caniatâd meicroffon wedi'i roi.");
+            }
+            console.error("Speech Error:", event.error);
+        };
+    }
+
+// 2. Updated visibility check for the mic button
+function updateMicButtonVisibility() {
+    const micBtn = document.getElementById('mic-btn');
+    if (!micBtn) return;
+
+    // If Speech isn't supported or is disabled in about:config
+    if (!SpeechRecognition) {
+        micBtn.style.display = 'none';
+        console.warn("Speech recognition is not supported or is disabled in this browser.");
+    } else {
+        micBtn.style.display = 'flex'; // Or 'block'
+    }
+}
     let isListening = false;
     let userInteracted = false;
 
@@ -941,6 +1027,70 @@
             return { num: n, noun };
         }
     }
+function generateTime() {
+    const hours = Math.floor(Math.random() * 24);
+    const minutes = Math.floor(Math.random() * 60);
+    const style = document.getElementById('time-style-sel').value;
+
+    // We use a helper to get the Welsh words for the time
+    // This assumes you have a getWelshTime function, 
+    // otherwise we display the digital time for the user to translate.
+    currentNumber = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    currentTarget = currentNumber; // Expects digital input or specific format
+
+    document.getElementById('display-number').innerText = currentNumber;
+    document.getElementById('input-field').value = "";
+    
+    // If you have a Welsh time converter, use it here:
+    // speakWelsh(getWelshTime(hours, minutes, style));
+}
+
+function generateDate() {
+    const year = Math.floor(Math.random() * (2100 - 1900 + 1)) + 1900;
+    const monthIdx = Math.floor(Math.random() * 12);
+    const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
+    const day = Math.floor(Math.random() * daysInMonth) + 1;
+
+    const monthsWelsh = [
+        "Ionawr", "Chwefror", "Mawrth", "Ebrill", "Mai", "Mehefin", 
+        "Gorffennaf", "Awst", "Medi", "Hydref", "Tachwedd", "Rhagfyr"
+    ];
+
+    currentNumber = `${day} ${monthsWelsh[monthIdx]} ${year}`;
+    currentTarget = `${day}/${monthIdx + 1}/${year}`; 
+
+    document.getElementById('display-number').innerText = currentNumber;
+    document.getElementById('input-field').value = "";
+    speakWelsh(currentNumber);
+}
+
+function generateGender() {
+    const items = [
+        { cy: "Bachgen", en: "Boy", g: "m" },
+        { cy: "Merch", en: "Girl", g: "f" },
+        { cy: "Ci", en: "Dog", g: "m" },
+        { cy: "Cath", en: "Cat", g: "f" },
+        { cy: "Pont", en: "Bridge", g: "f" },
+        { cy: "Car", en: "Car", g: "m" }
+    ];
+    const item = items[Math.floor(Math.random() * items.length)];
+    
+    currentNumber = item.cy;
+    // User must type 'm' or 'f'
+    currentTarget = item.g; 
+
+    document.getElementById('display-number').innerText = currentNumber;
+    document.getElementById('input-field').value = "";
+    
+    // Show a hint that we want gender
+    const badge = document.querySelector('.grammar-badge');
+    badge.innerText = "Gryw: gwrywaidd (m) neu benywaidd (f)?";
+    badge.classList.add('visible');
+    
+    speakWelsh(currentNumber);
+}
+
+
 
     function addToHistory(val) { state.history.push(val); if(state.history.length > 5) state.history.shift(); }
     function isRepeated(val) { return state.history.some(h => JSON.stringify(h) === JSON.stringify(val)); }
@@ -1968,46 +2118,57 @@ function generateHandsfree() {
     }
     
     function updateUI() { 
-        let campTitle = RANKS[0].name;
-        for(let i=RANKS.length-1; i>=0; i--) {
-            if (state.campaignXP >= RANKS[i].limit) {
-                campTitle = RANKS[i].name;
-                break;
-            }
-        }
-
-        let pracTitle = PRACTICE_RANKS[0].name;
-        for(let i=PRACTICE_RANKS.length-1; i>=0; i--) {
-            if (state.practiceXP >= PRACTICE_RANKS[i].limit) {
-                pracTitle = PRACTICE_RANKS[i].name;
-                break;
-            }
-        }
-
-        const isCamp = document.getElementById('campaign-toggle') ? document.getElementById('campaign-toggle').checked : false;
-        const xpBox = document.querySelector('.stat-item[title="XP"]');
-        const rankDisplay = document.getElementById('rank-display');
-
-        if (isCamp) {
-            if(xpBox) xpBox.innerHTML = `⭐ <span id="xp-display">${state.campaignXP}</span>`;
-            if(rankDisplay) rankDisplay.innerText = campTitle.split(' (')[0]; 
-        } else {
-            if(xpBox) xpBox.innerHTML = `🏋️ <span id="xp-display">${state.practiceXP}</span>`;
-            if(rankDisplay) rankDisplay.innerText = pracTitle.split(' (')[0]; 
-        }
-
-        const streakBox = document.querySelector('.stat-item[title="Streak"]');
-        if(streakBox) streakBox.innerHTML = `🔥 <span id="streak-display">${state.streak}</span>`;
-
-        const dailyBox = document.getElementById('daily-display');
-        if (dailyBox) {
-            if (state.goalMet) {
-                dailyBox.innerHTML = `<span style="color:var(--secondary)">Wedi gorffen! ✔️</span>`;
-            } else {
-                dailyBox.innerText = `${state.dailyXP}/${state.dailyGoal}`;
-            }
+    // 1. Calculate Titles
+    let campTitle = RANKS[0].name;
+    for(let i=RANKS.length-1; i>=0; i--) {
+        if (state.campaignXP >= RANKS[i].limit) {
+            campTitle = RANKS[i].name;
+            break;
         }
     }
+
+    let pracTitle = PRACTICE_RANKS[0].name;
+    for(let i=PRACTICE_RANKS.length-1; i>=0; i--) {
+        if (state.practiceXP >= PRACTICE_RANKS[i].limit) {
+            pracTitle = PRACTICE_RANKS[i].name;
+            break;
+        }
+    }
+
+    // 2. Determine Mode
+    const isCamp = document.getElementById('campaign-toggle') ? document.getElementById('campaign-toggle').checked : false;
+    
+    // 3. Update XP and Rank using IDs
+    const xpBox = document.getElementById('stat-xp');
+    const rankDisplay = document.getElementById('rank-display');
+
+    if (isCamp) {
+        if(xpBox) xpBox.innerHTML = `⭐ <span id="xp-display">${state.campaignXP}</span>`;
+        if(rankDisplay) rankDisplay.innerText = campTitle; 
+    } else {
+        if(xpBox) xpBox.innerHTML = `🏋️ <span id="xp-display">${state.practiceXP}</span>`;
+        if(rankDisplay) rankDisplay.innerText = pracTitle; 
+    }
+
+    // 4. Update Streak using ID
+    const streakBox = document.getElementById('stat-streak');
+    if(streakBox) {
+        streakBox.innerHTML = `🔥 <span id="streak-display">${state.streak}</span>`;
+    }
+
+    // 5. Update Daily Goal Display
+    const dailyDisplay = document.getElementById('daily-display');
+    if (dailyDisplay) {
+        if (state.goalMet) {
+            dailyDisplay.innerHTML = `<span style="color:var(--secondary)">Wedi gorffen! ✔️</span>`;
+        } else {
+            dailyDisplay.innerText = `${state.dailyXP}/${state.dailyGoal}`;
+         }
+        }
+    }
+
+
+    
 </script>
 
 <style>
@@ -2052,6 +2213,7 @@ function generateHandsfree() {
         padding: 15px 0;
         height: 60px;
         z-index: 10;
+        padding-top: env(safe-area-inset-top, 20px);
         }
 
         .header-controls-left { position: absolute; left: 10px; display: flex; }
@@ -2165,7 +2327,7 @@ function generateHandsfree() {
         .footer { 
             position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); padding: 15px; 
             border-top: 1px solid var(--border); display: grid; gap: 12px; z-index: 100; height: 85px; 
-            grid-template-columns: 2fr 1fr 1fr 1fr; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); 
+            grid-template-columns: 2fr 1fr 1fr 1fr; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); padding-bottom: env(safe-area-inset-bottom, 20px);
         }
         .btn-action { 
             border: none; border-radius: 12px; font-weight: 700; font-size: 0.9rem; color: white; cursor: pointer; 
@@ -2224,8 +2386,16 @@ function generateHandsfree() {
         @keyframes fall { to { transform: translateY(105vh) rotate(720deg); } }
         .btn-review { width:100%; padding:10px; margin-top:10px; background:var(--text); color:var(--bg); border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
     
-        .grammar-badge { font-size: 0.85rem; color: #ffa726; margin-top: -5px; margin-bottom: 10px; font-weight: bold; letter-spacing: 0.5px; opacity: 0; transition: opacity 0.3s; }
-        .grammar-badge.visible { opacity: 1; }
+        .grammar-badge {
+    background: var(--secondary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    display: none;
+}
+        .grammar-badge.visible { opacity: 1; display: inline-block;}
         .tab-header { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
         .tab-btn { flex: 1; background: none; border: none; padding: 12px; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
         .tab-btn:hover { background: rgba(0,0,0,0.03); }
@@ -2241,6 +2411,25 @@ function generateHandsfree() {
         #tab-grammar ul li { color: var(--text) !important; }
 
         .help-h { color: var(--secondary); font-weight: bold; margin-bottom: 8px; }
+
+#display-number {
+    /* Fluid font size that respects screen width */
+    font-size: clamp(2.5rem, 12vw, 5rem);
+    text-align: center;
+    width: 100%;
+}
+body, .container {
+    /* Fixed height for all mobile browsers */
+    height: 100vh;
+    height: 100dvh; 
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    /* Background color should extend to the edges */
+    background-color: var(--bg);
+}
+
     </style>
 </body>
 </html>
