@@ -58,10 +58,10 @@
 
     <div id="mc-area" class="mc-grid cols-2"></div>
     
-    <div id="type-area" class="type-container">
-        <input type="text" id="type-input" class="type-input" placeholder="Type answer..." autocomplete="off">
-        <button class="btn-check" id="action-btn" onclick="checkTyped()">CHECK ANSWER</button>
-    </div>
+  <div id="type-area" class="type-container">
+    <input type="number" id="type-input" class="type-input" placeholder="Teipiwch rif..." autocomplete="off">
+    <button class="btn-check" id="type-btn" onclick="handleMainButton()">GWIRIO</button>
+</div>
     
     <div id="voice-controls" style="display:none; text-align:center; margin-top:-10px; color:#666;">
         <p>Tap the mic and say the Welsh word.</p>
@@ -96,7 +96,7 @@
                 <button class="mode-btn" onclick="selectMode('gender')" id="nav-gender"><span>🚻</span> Gender</button>
                 <button class="mode-btn" onclick="selectMode('ordinal')" id="nav-ordinal"><span>🥇</span> Ordinals</button>
                 <button class="mode-btn" onclick="selectMode('phone')" id="nav-phone"><span>📱</span> Phone Nos</button>
-                <button class="mode-btn" id="nav-translator" onclick="selectMode('translator')">🔤</button>
+                <button class="mode-btn" id="nav-translator" onclick="selectMode('translator')">🔤  Translate</button>
            </div>
         </div>
 
@@ -244,14 +244,17 @@
     <div class="modal-box">
         <button class="close-x" onclick="toggleHelp()">×</button>
         
-        <div class="tab-header" style="border:none; margin-bottom:20px;">
-            <select id="help-nav-dropdown" onchange="setHelpTab(this.value)" style="width:100%; padding:12px; font-size:1rem; font-weight:bold; border-radius:12px; border:2px solid var(--primary); background:var(--card); color:var(--text);">
+        <div class="tab-header" style="border:none; margin-bottom:20px; position:relative;">
+            <select id="help-nav-dropdown" onchange="setHelpTab(this.value)" style="width:100%; padding:12px; font-size:1rem; font-weight:bold; border-radius:12px; border:2px solid var(--primary); background:var(--card); color:var(--text); appearance:none; -webkit-appearance:none; padding-right:40px; cursor:pointer;">
                 <option value="guide">📖 User Guide</option>
                 <option value="grammar">🧠 Grammar Rules</option>
                 <option value="gamemodes">🎮 Game Modes</option>
                 <option value="campaign">🚀 Campaign Info</option>
                 <option value="progress">📊 My Stats</option>
             </select>
+            <div style="position:absolute; right:15px; top:50%; transform:translateY(-50%); pointer-events:none; font-size:1.2rem; color:var(--primary);">
+                ▼
+            </div>
         </div>
 
        <div id="tab-guide" class="tab-content active">
@@ -473,7 +476,10 @@
     // --- PART 1: WELSH DATA DICTIONARY ---
     const UNITS = ["dim", "un", "dau", "tri", "pedwar", "pump", "chwech", "saith", "wyth", "naw"];
     const UNITS_FEM = ["dim", "un", "dwy", "tair", "pedair", "pump", "chwech", "saith", "wyth", "naw"];
-    const TENS = ["", "deg", "dau ddeg", "tri deg", "pedwar deg", "pum deg", "chwe deg", "saith deg", "wyth deg", "naw deg"];
+    
+    // UPDATED: 'deg' changed to 'un deg' so 11 becomes 'un deg un' instead of 'deg un'
+    const TENS = ["", "un deg", "dau ddeg", "tri deg", "pedwar deg", "pum deg", "chwe deg", "saith deg", "wyth deg", "naw deg"];
+    
     const HUNDREDS = ["", "cant", "dau gant", "tri chant", "pedwar cant", "pum cant", "chwe chant", "saith cant", "wyth cant", "naw cant"];
 
     const MONTHS_CY = ["Ionawr", "Chwefror", "Mawrth", "Ebrill", "Mai", "Mehefin", "Gorffennaf", "Awst", "Medi", "Hydref", "Tachwedd", "Rhagfyr"];
@@ -497,22 +503,22 @@
     };
 
     const RANKS = [
-    { limit: 0, name: "Dechreuwr" },     // Novice (Beginner)
-    { limit: 200, name: "Prentis" },     // Apprentice
-    { limit: 5000, name: "Crefftwr" },   // Journeyman (Craftsman)
-    { limit: 10000, name: "Arbenigwr" }, // Expert
-    { limit: 20000, name: "Meistr" },    // Master
-    { limit: 50000, name: "Gwrw" }       // Guru
-];
+        { limit: 0, name: "Dechreuwr" },     // Novice (Beginner)
+        { limit: 200, name: "Prentis" },     // Apprentice
+        { limit: 5000, name: "Crefftwr" },   // Journeyman (Craftsman)
+        { limit: 10000, name: "Arbenigwr" }, // Expert
+        { limit: 20000, name: "Meistr" },    // Master
+        { limit: 50000, name: "Gwrw" }       // Guru
+    ];
 
    const PRACTICE_RANKS = [
-    { limit: 0, name: "Ymwelydd" },      // Tourist (Visitor)
-    { limit: 500, name: "Dysgwr" },      // Trainee (Learner)
-    { limit: 5000, name: "Ymdrechwr" },  // Grinder (Striver / Hard Worker)
-    { limit: 10000, name: "Seliwr" },    // Gym Rat (Enthusiast / Devotee)
-    { limit: 25000, name: "Hen Law" },   // Veteran (Literally "Old Hand", a great Welsh idiom)
-    { limit: 50000, name: "Chwedl" }     // Legend
-];
+        { limit: 0, name: "Ymwelydd" },      // Tourist (Visitor)
+        { limit: 500, name: "Dysgwr" },      // Trainee (Learner)
+        { limit: 5000, name: "Ymdrechwr" },  // Grinder (Striver / Hard Worker)
+        { limit: 10000, name: "Seliwr" },    // Gym Rat (Enthusiast / Devotee)
+        { limit: 25000, name: "Hen Law" },   // Veteran (Literally "Old Hand", a great Welsh idiom)
+        { limit: 50000, name: "Chwedl" }     // Legend
+    ];
 
     const GENDER_NOUNS = [
         { word: "ci", pl: "cŵn", form: "m", en: "dog", soft: "gi", asp: "chi", plSoft: "gŵn", logic: "living" },
@@ -579,18 +585,16 @@
     let availableVoices = [];
     
     // --- SPEECH RECOGNITION ---
-   
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition;
 
     if (SpeechRecognition) {
         recognition = new SpeechRecognition();
         recognition.continuous = false;
-        recognition.lang = 'cy-GB'; // Setting to Welsh
+        recognition.lang = 'cy-GB'; 
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
 
-        // Handle Samsung/Google Service specific errors
         recognition.onerror = (event) => {
             if (event.error === 'service-not-allowed') {
                 alert("Gwall: Gwiriwch fod yr ap Google wedi'i alluogi a bod caniatâd meicroffon wedi'i roi.");
@@ -599,19 +603,16 @@
         };
     }
 
-// 2. Updated visibility check for the mic button
-function updateMicButtonVisibility() {
-    const micBtn = document.getElementById('mic-btn');
-    if (!micBtn) return;
-
-    // If Speech isn't supported or is disabled in about:config
-    if (!SpeechRecognition) {
-        micBtn.style.display = 'none';
-        console.warn("Speech recognition is not supported or is disabled in this browser.");
-    } else {
-        micBtn.style.display = 'flex'; // Or 'block'
+    function updateMicButtonVisibility() {
+        const micBtn = document.getElementById('mic-btn');
+        if (!micBtn) return;
+        if (!SpeechRecognition) {
+            micBtn.style.display = 'none';
+        } else {
+            micBtn.style.display = 'flex'; 
+        }
     }
-}
+    
     let isListening = false;
     let userInteracted = false;
 
@@ -646,14 +647,7 @@ function updateMicButtonVisibility() {
             toggleCampaign(); 
         }
 
-        // Setup Mic
         if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.lang = 'cy-GB';
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-            
             recognition.onstart = function() {
                 isListening = true;
                 document.getElementById('mic-btn').style.background = "#34a853";
@@ -689,7 +683,7 @@ function updateMicButtonVisibility() {
             if (state.audioPlaying) return; 
             if (state.solved && state.mode !== 'translator') { if (e.key === 'Enter') generate(); return; }
             if (document.getElementById('input-style').value === 'type' || state.mode === 'translator' || state.mode === 'dictation') {
-                if (e.key === 'Enter') checkTyped();
+                if (e.key === 'Enter') handleMainButton();
             } else {
                 if (!isNaN(parseInt(e.key)) && e.key !== '0') {
                     const idx = parseInt(e.key) - 1;
@@ -814,17 +808,35 @@ function updateMicButtonVisibility() {
         document.getElementById('badge-review').style.display = 'none';
 
         if (state.mode === 'translator') {
-             document.getElementById('cy-text').innerText = "Type a number...";
+             document.getElementById('cy-text').innerText = "Teipiwch rif...";
              document.getElementById('display-box').classList.add('trans-active');
-             document.getElementById('type-input').value = "";
-             document.getElementById('type-input').focus();
-             document.getElementById('main-btn').style.display = 'none'; 
-             document.getElementById('action-btn').innerText = "TRANSLATE & SPEAK 🔊";
-             return;
+             applySettings(); 
+             
+             const inputEl = document.getElementById('type-input');
+             inputEl.value = "";
+             
+             const actionBtn = document.getElementById('type-btn');
+             if (actionBtn) {
+                 actionBtn.style.display = 'flex'; 
+                 actionBtn.innerText = "LLEFARU 🔊";
+                 actionBtn.onclick = translateAndSpeak;
+             }
+             
+             setTimeout(() => inputEl.focus(), 50);
+             return; 
+
         } else {
             document.getElementById('display-box').classList.remove('trans-active');
-            document.getElementById('main-btn').style.display = 'flex';
-            document.getElementById('action-btn').innerText = "CHECK ANSWER";
+            
+            const plBox = document.getElementById('pl-text') || document.getElementById('cy-text');
+            if (plBox) { plBox.classList.remove('visible'); plBox.innerText = ""; }
+            if (enBox) { enBox.classList.remove('visible'); enBox.innerText = ""; }
+
+            const typeBtn = document.getElementById('type-btn');
+            if (typeBtn) {
+                typeBtn.innerText = "GWIRIO";
+                typeBtn.onclick = handleMainButton; 
+            }
         }
 
         const mainBtn = document.getElementById('main-btn');
@@ -1001,10 +1013,19 @@ function updateMicButtonVisibility() {
             let dow = Math.floor(Math.random()*7);
             return {d, m:mIdx, y, dow};
         }
-        else if (m === 'phone') {
-            let p1 = Math.floor(Math.random() * 400) + 500; 
-            let p2 = Math.floor(Math.random() * 900) + 100; 
-            let p3 = Math.floor(Math.random() * 900) + 100; 
+       else if (activeMode === 'phone' || state.mode === 'phone') {
+            const isMobile = Math.random() < 0.6; 
+            let p1, p2, p3;
+
+            if (isMobile) {
+                p1 = "07" + Math.floor(Math.random() * 900 + 100).toString();
+            } else {
+                p1 = "01" + Math.floor(Math.random() * 900 + 100).toString();
+            }
+            
+            p2 = Math.floor(Math.random() * 900 + 100).toString(); 
+            p3 = Math.floor(Math.random() * 900 + 100).toString(); 
+            
             return { p1, p2, p3 };
         }
         else if (m === 'ordinal') {
@@ -1027,70 +1048,6 @@ function updateMicButtonVisibility() {
             return { num: n, noun };
         }
     }
-function generateTime() {
-    const hours = Math.floor(Math.random() * 24);
-    const minutes = Math.floor(Math.random() * 60);
-    const style = document.getElementById('time-style-sel').value;
-
-    // We use a helper to get the Welsh words for the time
-    // This assumes you have a getWelshTime function, 
-    // otherwise we display the digital time for the user to translate.
-    currentNumber = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-    currentTarget = currentNumber; // Expects digital input or specific format
-
-    document.getElementById('display-number').innerText = currentNumber;
-    document.getElementById('input-field').value = "";
-    
-    // If you have a Welsh time converter, use it here:
-    // speakWelsh(getWelshTime(hours, minutes, style));
-}
-
-function generateDate() {
-    const year = Math.floor(Math.random() * (2100 - 1900 + 1)) + 1900;
-    const monthIdx = Math.floor(Math.random() * 12);
-    const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
-    const day = Math.floor(Math.random() * daysInMonth) + 1;
-
-    const monthsWelsh = [
-        "Ionawr", "Chwefror", "Mawrth", "Ebrill", "Mai", "Mehefin", 
-        "Gorffennaf", "Awst", "Medi", "Hydref", "Tachwedd", "Rhagfyr"
-    ];
-
-    currentNumber = `${day} ${monthsWelsh[monthIdx]} ${year}`;
-    currentTarget = `${day}/${monthIdx + 1}/${year}`; 
-
-    document.getElementById('display-number').innerText = currentNumber;
-    document.getElementById('input-field').value = "";
-    speakWelsh(currentNumber);
-}
-
-function generateGender() {
-    const items = [
-        { cy: "Bachgen", en: "Boy", g: "m" },
-        { cy: "Merch", en: "Girl", g: "f" },
-        { cy: "Ci", en: "Dog", g: "m" },
-        { cy: "Cath", en: "Cat", g: "f" },
-        { cy: "Pont", en: "Bridge", g: "f" },
-        { cy: "Car", en: "Car", g: "m" }
-    ];
-    const item = items[Math.floor(Math.random() * items.length)];
-    
-    currentNumber = item.cy;
-    // User must type 'm' or 'f'
-    currentTarget = item.g; 
-
-    document.getElementById('display-number').innerText = currentNumber;
-    document.getElementById('input-field').value = "";
-    
-    // Show a hint that we want gender
-    const badge = document.querySelector('.grammar-badge');
-    badge.innerText = "Gryw: gwrywaidd (m) neu benywaidd (f)?";
-    badge.classList.add('visible');
-    
-    speakWelsh(currentNumber);
-}
-
-
 
     function addToHistory(val) { state.history.push(val); if(state.history.length > 5) state.history.shift(); }
     function isRepeated(val) { return state.history.some(h => JSON.stringify(h) === JSON.stringify(val)); }
@@ -1251,8 +1208,16 @@ function generateGender() {
             }
         } 
         else if (m === 'phone') {
+            state.rawData = val;
             state.currentEN = `${val.p1} ${val.p2} ${val.p3}`;
-            state.currentCY = `${numToCy(val.p1)}, ${numToCy(val.p2)}, ${numToCy(val.p3)}`;
+            
+            const digitMap = {
+                '0': 'sero', '1': 'un', '2': 'dau', '3': 'tri', '4': 'pedwar',
+                '5': 'pump', '6': 'chwe', '7': 'saith', '8': 'wyth', '9': 'naw'
+            };
+            const readD = (s) => s.toString().split('').map(d => digitMap[d]).join(' ');
+
+            state.currentCY = `${readD(val.p1)}, ${readD(val.p2)}, ${readD(val.p3)}`;
         }
         else if (m === 'ordinal') {
             state.currentEN = val + "th"; 
@@ -1432,12 +1397,18 @@ function generateGender() {
                         fakeText = showDigits ? fakeVal + "th" : (ORDINAL_CY[fakeVal] || fakeVal.toString());
                     }
                     else if (state.mode === 'phone') {
-                        if (showDigits) {
-                            fakeText = `${fakeVal.p1} ${fakeVal.p2} ${fakeVal.p3}`;
-                        } else {
-                            fakeText = `${numToCy(fakeVal.p1)}, ${numToCy(fakeVal.p2)}, ${numToCy(fakeVal.p3)}`;
+                            if (showDigits) {
+                                fakeText = `${fakeVal.p1} ${fakeVal.p2} ${fakeVal.p3}`;
+                            } else {
+                                const digitMap = {
+                                    '0': 'sero', '1': 'un', '2': 'dau', '3': 'tri', '4': 'pedwar',
+                                    '5': 'pump', '6': 'chwe', '7': 'saith', '8': 'wyth', '9': 'naw'
+                                };
+                                const readD = (s) => s.toString().split('').map(d => digitMap[d]).join(' ');
+                                
+                                fakeText = `${readD(fakeVal.p1)}, ${readD(fakeVal.p2)}, ${readD(fakeVal.p3)}`;
+                            }
                         }
-                    }
                     else if (state.mode === 'time') {
                         if (showDigits) {
                             fakeText = `${fakeVal.h.toString().padStart(2,'0')}:${fakeVal.m.toString().padStart(2,'0')}`;
@@ -1465,7 +1436,20 @@ function generateGender() {
                         }
                     }
                     else if (state.mode === 'dates') {
-                         fakeText = "---"; 
+                        if (showDigits) {
+                            let enStr = ""; 
+                            if (document.getElementById('day-toggle').checked) enStr += `${DAYS_EN[fakeVal.dow]}, `; 
+                            enStr += `${MONTHS_EN[fakeVal.m]} ${fakeVal.d}`; 
+                            if (document.getElementById('year-toggle').checked) enStr += ` ${fakeVal.y}`; 
+                            fakeText = enStr;
+                        } else {
+                            let cyStr = ""; 
+                            if (document.getElementById('day-toggle').checked) cyStr += `${DAYS_CY[fakeVal.dow]}, `; 
+                            let dayText = ORDINAL_CY[fakeVal.d] || fakeVal.d.toString(); 
+                            cyStr += `Y ${dayText} o fis ${MONTHS_CY[fakeVal.m]}`; 
+                            if (document.getElementById('year-toggle').checked) cyStr += ` ${numToCy(fakeVal.y)}`; 
+                            fakeText = cyStr;
+                        }
                     }
                 } catch (e) { console.log(e); fakeText = "---"; }
 
@@ -1514,6 +1498,7 @@ function generateGender() {
         if (isCorrect) { document.getElementById('voice-feedback').innerText = "Correct! " + cleanSpoken; document.getElementById('voice-feedback').style.color = "var(--secondary)"; win(document.getElementById('mic-btn')); } 
         else { document.getElementById('voice-feedback').innerText = "Heard: " + rawSpoken; document.getElementById('voice-feedback').style.color = "var(--error)"; document.getElementById('mic-btn').classList.add('wrong'); setTimeout(() => document.getElementById('mic-btn').classList.remove('wrong'), 500); }
     }
+    
     function toggleMic() { if (!recognition) { alert("Voice input not supported."); return; } if (isListening) recognition.stop(); else { initAudio(); recognition.start(); } }
 
     function win(btn) {
@@ -1615,152 +1600,77 @@ function generateGender() {
     }
     
     function toggleHandsfree() { 
-    state.handsfree = !state.handsfree; 
-    const hfPage = document.getElementById('handsfree-page');
+        state.handsfree = !state.handsfree; 
+        const hfPage = document.getElementById('handsfree-page');
 
-    if (state.handsfree) { 
-        // 1. Show the dedicated full-screen page
-        hfPage.style.display = 'flex'; 
-        initAudio(); 
-        
-        // 2. Start the isolated handsfree loop
-        generateHandsfree(); 
-    } else { 
-        // 1. Hide the dedicated page
-        hfPage.style.display = 'none'; 
-        
-        // 2. Hard kill all audio and timers
-        if (autoNextTimer) clearTimeout(autoNextTimer); 
-        window.speechSynthesis.cancel(); 
-        state.audioPlaying = false;
-
-        // 3. Restart standard game safely in the background
-        generate(); 
-    } 
-}
-
-// A completely isolated generator strictly for the Handsfree page
-function generateHandsfree() { 
-    if (!state.handsfree) return; 
-    
-    if (autoNextTimer) clearTimeout(autoNextTimer);
-    window.speechSynthesis.cancel(); 
-    state.audioPlaying = true;
-
-    // 1. Determine ranges (Respects Campaign or Manual sliders)
-    let min = 1, max = 100;
-    if (document.getElementById('campaign-toggle').checked) {
-        // Sync with whatever the campaign level allows
-        let lblMin = document.getElementById('lbl-min').innerText.replace(/,/g, '');
-        let lblMax = document.getElementById('lbl-max').innerText.split(' ')[0].replace(/,/g, '');
-        min = parseInt(lblMin) || 1;
-        max = parseInt(lblMax) || 200;
-    } else {
-        min = Math.pow(10, document.getElementById('minP').value);
-        max = Math.pow(10, document.getElementById('maxP').value);
+        if (state.handsfree) { 
+            hfPage.style.display = 'flex'; 
+            initAudio(); 
+            generateHandsfree(); 
+        } else { 
+            hfPage.style.display = 'none'; 
+            if (autoNextTimer) clearTimeout(autoNextTimer); 
+            window.speechSynthesis.cancel(); 
+            state.audioPlaying = false;
+            generate(); 
+        } 
     }
 
-    // 2. Generate and process the word
-    let newVal, safety = 0;
-    do { 
-        newVal = generateRawValue(min, max, state.mode); 
-        safety++; 
-    } while (isRepeated(newVal) && safety < 15);
-    
-    addToHistory(newVal);
-    processValue(newVal, state.mode);
-
-    // 3. Update the dedicated Handsfree DOM elements directly
-    let targetText = (state.mode === 'context') ? state.speechText : (state.currentPL || state.currentCY);
-    
-    document.getElementById('hf-pl-text').innerHTML = (state.mode === 'context') ? state.speechText : targetText;
-    document.getElementById('hf-en-text').innerText = state.currentEN;
-
-    // 4. The Audio Chain
-    let langCode = document.documentElement.lang === 'cy' ? 'cy-GB' : 'pl-PL';
-    
-    let u1 = new SpeechSynthesisUtterance(" " + targetText); u1.lang = langCode; u1.rate = 1.0; 
-    let u2 = new SpeechSynthesisUtterance(" " + state.currentEN); u2.lang = 'en-US'; u2.rate = 1.0; 
-    let u3 = new SpeechSynthesisUtterance(" " + targetText); u3.lang = langCode; u3.rate = 0.5; 
-    let u4 = new SpeechSynthesisUtterance(" " + targetText); u4.lang = langCode; u4.rate = 1.0; 
-    
-    const playNext = (u) => { if (state.handsfree) window.speechSynthesis.speak(u); };
-    const scheduleNext = () => { 
-        if (state.handsfree) {
-            state.audioPlaying = false;
-            // Loop back to the start of this isolated function
-            autoNextTimer = setTimeout(generateHandsfree, 3000); 
-        }
-    }; 
-    
-    u1.onend = () => playNext(u2); u1.onerror = () => playNext(u2);
-    u2.onend = () => playNext(u3); u2.onerror = () => playNext(u3);
-    u3.onend = () => playNext(u4); u3.onerror = () => playNext(u4);
-    u4.onend = scheduleNext;       u4.onerror = scheduleNext;
-
-    if (state.handsfree) window.speechSynthesis.speak(u1); 
-}
-    
     function generateHandsfree() { 
-    if (!state.handsfree) return; 
-    
-    if (autoNextTimer) clearTimeout(autoNextTimer);
-    window.speechSynthesis.cancel(); 
-    state.audioPlaying = true;
+        if (!state.handsfree) return; 
+        
+        if (autoNextTimer) clearTimeout(autoNextTimer);
+        window.speechSynthesis.cancel(); 
+        state.audioPlaying = true;
 
-    // 1. Determine ranges (Respects Campaign or Manual sliders)
-    let min = 1, max = 100;
-    if (document.getElementById('campaign-toggle').checked) {
-        // Sync with whatever the campaign level allows
-        let lblMin = document.getElementById('lbl-min').innerText.replace(/,/g, '');
-        let lblMax = document.getElementById('lbl-max').innerText.split(' ')[0].replace(/,/g, '');
-        min = parseInt(lblMin) || 1;
-        max = parseInt(lblMax) || 200;
-    } else {
-        min = Math.pow(10, document.getElementById('minP').value);
-        max = Math.pow(10, document.getElementById('maxP').value);
-    }
-
-    // 2. Generate and process the word
-    let newVal, safety = 0;
-    do { 
-        newVal = generateRawValue(min, max, state.mode); 
-        safety++; 
-    } while (isRepeated(newVal) && safety < 15);
-    
-    addToHistory(newVal);
-    processValue(newVal, state.mode);
-
-    // 3. Update the dedicated Handsfree DOM elements directly
-    let targetText = (state.mode === 'context') ? state.speechText : (state.currentPL || state.currentCY);
-    
-    document.getElementById('hf-pl-text').innerHTML = (state.mode === 'context') ? state.speechText : targetText;
-    document.getElementById('hf-en-text').innerText = state.currentEN;
-
-    // 4. The Audio Chain
-    let langCode = document.documentElement.lang === 'cy' ? 'cy-GB' : 'pl-PL';
-    
-    let u1 = new SpeechSynthesisUtterance(" " + targetText); u1.lang = langCode; u1.rate = 1.0; 
-    let u2 = new SpeechSynthesisUtterance(" " + state.currentEN); u2.lang = 'en-US'; u2.rate = 1.0; 
-    let u3 = new SpeechSynthesisUtterance(" " + targetText); u3.lang = langCode; u3.rate = 0.5; 
-    let u4 = new SpeechSynthesisUtterance(" " + targetText); u4.lang = langCode; u4.rate = 1.0; 
-    
-    const playNext = (u) => { if (state.handsfree) window.speechSynthesis.speak(u); };
-    const scheduleNext = () => { 
-        if (state.handsfree) {
-            state.audioPlaying = false;
-            // Loop back to the start of this isolated function
-            autoNextTimer = setTimeout(generateHandsfree, 3000); 
+        let min = 1, max = 100;
+        if (document.getElementById('campaign-toggle').checked) {
+            let lblMin = document.getElementById('lbl-min').innerText.replace(/,/g, '');
+            let lblMax = document.getElementById('lbl-max').innerText.split(' ')[0].replace(/,/g, '');
+            min = parseInt(lblMin) || 1;
+            max = parseInt(lblMax) || 200;
+        } else {
+            min = Math.pow(10, document.getElementById('minP').value);
+            max = Math.pow(10, document.getElementById('maxP').value);
         }
-    }; 
-    
-    u1.onend = () => playNext(u2); u1.onerror = () => playNext(u2);
-    u2.onend = () => playNext(u3); u2.onerror = () => playNext(u3);
-    u3.onend = () => playNext(u4); u3.onerror = () => playNext(u4);
-    u4.onend = scheduleNext;       u4.onerror = scheduleNext;
 
-    if (state.handsfree) window.speechSynthesis.speak(u1); 
-}
+        let newVal, safety = 0;
+        do { 
+            newVal = generateRawValue(min, max, state.mode); 
+            safety++; 
+        } while (isRepeated(newVal) && safety < 15);
+        
+        addToHistory(newVal);
+        processValue(newVal, state.mode);
+
+        let targetText = (state.mode === 'context') ? state.speechText : (state.currentPL || state.currentCY);
+        
+        document.getElementById('hf-pl-text').innerHTML = (state.mode === 'context') ? state.speechText : targetText;
+        document.getElementById('hf-en-text').innerText = state.currentEN;
+
+        let langCode = document.documentElement.lang === 'cy' ? 'cy-GB' : 'pl-PL';
+        
+        let u1 = new SpeechSynthesisUtterance(" " + targetText); u1.lang = langCode; u1.rate = 1.0; 
+        let u2 = new SpeechSynthesisUtterance(" " + state.currentEN); u2.lang = 'en-US'; u2.rate = 1.0; 
+        let u3 = new SpeechSynthesisUtterance(" " + targetText); u3.lang = langCode; u3.rate = 0.5; 
+        let u4 = new SpeechSynthesisUtterance(" " + targetText); u4.lang = langCode; u4.rate = 1.0; 
+        
+        const playNext = (u) => { if (state.handsfree) window.speechSynthesis.speak(u); };
+        const scheduleNext = () => { 
+            if (state.handsfree) {
+                state.audioPlaying = false;
+                autoNextTimer = setTimeout(generateHandsfree, 3000); 
+            }
+        }; 
+        
+        u1.onend = () => playNext(u2); u1.onerror = () => playNext(u2);
+        u2.onend = () => playNext(u3); u2.onerror = () => playNext(u3);
+        u3.onend = () => playNext(u4); u3.onerror = () => playNext(u4);
+        u4.onend = scheduleNext;       u4.onerror = scheduleNext;
+
+        if (state.handsfree) window.speechSynthesis.speak(u1); 
+    }
+    
     function handleSpeakerClick() { speakerTaps++; if (speakerTapTimer) clearTimeout(speakerTapTimer); speakerTapTimer = setTimeout(() => { let rate = 1.0; let msg = ""; if (speakerTaps === 1) { rate = 1.0; } else if (speakerTaps === 2) { rate = 0.5; msg = "🐢 Slow Speed (0.5x)"; } else { rate = 0.25; msg = "🐢🐢 Super Slow (0.25x)"; } if (msg) { let fb = document.getElementById('voice-feedback'); fb.innerText = msg; fb.style.color = "var(--primary)"; setTimeout(() => { if(fb.innerText === msg) fb.innerText = ""; }, 1500); } speak(rate); speakerTaps = 0; }, 300); }
     
     function updateModeUI(m) {
@@ -1789,9 +1699,33 @@ function generateHandsfree() {
         document.getElementById('input-row').style.display = (m==='translator' || m==='gender' || m==='context') ? 'none' : 'flex';
     }
 
-    function selectMode(m) {
+   function selectMode(m) {
         state.mode = m;
+        
+        const campToggle = document.getElementById('campaign-toggle');
+        if (campToggle) {
+            campToggle.checked = false;
+            toggleCampaign(); 
+        }
+
+        const mainBtn = document.getElementById('main-btn');
+        const displayBox = document.getElementById('display-box');
+
+        if (m === 'translator') {
+            if (displayBox) displayBox.classList.add('trans-active');
+            if (mainBtn) {
+                mainBtn.style.display = 'flex'; 
+                mainBtn.innerText = "LLEFARU 🔊"; 
+            }
+            setTimeout(() => document.getElementById('type-input').focus(), 300);
+        } else {
+            if (displayBox) displayBox.classList.remove('trans-active');
+            if (mainBtn) mainBtn.innerText = "HEPGOR ➡️"; 
+        }
+
         updateModeUI(m);
+        toggleSettings(); 
+        generate(); 
     }
 
     function switchMode(m) { 
@@ -1828,8 +1762,6 @@ function generateHandsfree() {
         source.connect(audioCtx.destination); 
         source.start(0); 
     }
-
-    let isFirstVoice = true;
 
     function speak(rate) { 
         if (!userInteracted) return; 
@@ -2118,56 +2050,73 @@ function generateHandsfree() {
     }
     
     function updateUI() { 
-    // 1. Calculate Titles
-    let campTitle = RANKS[0].name;
-    for(let i=RANKS.length-1; i>=0; i--) {
-        if (state.campaignXP >= RANKS[i].limit) {
-            campTitle = RANKS[i].name;
-            break;
+        let campTitle = RANKS[0].name;
+        for(let i=RANKS.length-1; i>=0; i--) {
+            if (state.campaignXP >= RANKS[i].limit) {
+                campTitle = RANKS[i].name;
+                break;
+            }
         }
-    }
 
-    let pracTitle = PRACTICE_RANKS[0].name;
-    for(let i=PRACTICE_RANKS.length-1; i>=0; i--) {
-        if (state.practiceXP >= PRACTICE_RANKS[i].limit) {
-            pracTitle = PRACTICE_RANKS[i].name;
-            break;
+        let pracTitle = PRACTICE_RANKS[0].name;
+        for(let i=PRACTICE_RANKS.length-1; i>=0; i--) {
+            if (state.practiceXP >= PRACTICE_RANKS[i].limit) {
+                pracTitle = PRACTICE_RANKS[i].name;
+                break;
+            }
         }
-    }
 
-    // 2. Determine Mode
-    const isCamp = document.getElementById('campaign-toggle') ? document.getElementById('campaign-toggle').checked : false;
-    
-    // 3. Update XP and Rank using IDs
-    const xpBox = document.getElementById('stat-xp');
-    const rankDisplay = document.getElementById('rank-display');
+        const isCamp = document.getElementById('campaign-toggle') ? document.getElementById('campaign-toggle').checked : false;
+        
+        const xpBox = document.getElementById('stat-xp');
+        const rankDisplay = document.getElementById('rank-display');
 
-    if (isCamp) {
-        if(xpBox) xpBox.innerHTML = `⭐ <span id="xp-display">${state.campaignXP}</span>`;
-        if(rankDisplay) rankDisplay.innerText = campTitle; 
-    } else {
-        if(xpBox) xpBox.innerHTML = `🏋️ <span id="xp-display">${state.practiceXP}</span>`;
-        if(rankDisplay) rankDisplay.innerText = pracTitle; 
-    }
-
-    // 4. Update Streak using ID
-    const streakBox = document.getElementById('stat-streak');
-    if(streakBox) {
-        streakBox.innerHTML = `🔥 <span id="streak-display">${state.streak}</span>`;
-    }
-
-    // 5. Update Daily Goal Display
-    const dailyDisplay = document.getElementById('daily-display');
-    if (dailyDisplay) {
-        if (state.goalMet) {
-            dailyDisplay.innerHTML = `<span style="color:var(--secondary)">Wedi gorffen! ✔️</span>`;
+        if (isCamp) {
+            if(xpBox) xpBox.innerHTML = `⭐ <span id="xp-display">${state.campaignXP}</span>`;
+            if(rankDisplay) rankDisplay.innerText = campTitle; 
         } else {
-            dailyDisplay.innerText = `${state.dailyXP}/${state.dailyGoal}`;
-         }
+            if(xpBox) xpBox.innerHTML = `🏋️ <span id="xp-display">${state.practiceXP}</span>`;
+            if(rankDisplay) rankDisplay.innerText = pracTitle; 
+        }
+
+        const streakBox = document.getElementById('stat-streak');
+        if(streakBox) {
+            streakBox.innerHTML = `🔥 <span id="streak-display">${state.streak}</span>`;
+        }
+
+        const dailyDisplay = document.getElementById('daily-display');
+        if (dailyDisplay) {
+            if (state.goalMet) {
+                dailyDisplay.innerHTML = `<span style="color:var(--secondary)">Wedi gorffen! ✔️</span>`;
+            } else {
+                dailyDisplay.innerText = `${state.dailyXP}/${state.dailyGoal}`;
+            }
         }
     }
 
+    function translateAndSpeak() {
+        const inputField = document.getElementById('type-input');
+        const val = parseInt(inputField.value);
+        
+        if (isNaN(val)) return;
 
+        const welshResult = numToCy(val);
+        
+        const cyBox = document.getElementById('cy-text');
+        cyBox.innerText = welshResult;
+        cyBox.classList.add('visible');
+
+        state.currentCY = welshResult;
+        speak(1.0);
+    }
+
+    function handleMainButton() {
+        if (state.mode === 'translator') {
+            translateAndSpeak();
+        } else {
+            checkTyped(); 
+        }
+    }
     
 </script>
 
@@ -2208,7 +2157,7 @@ function generateHandsfree() {
          align-items: center;
          justify-content: center;
           position: relative;
-         background: linear-gradient(to bottom, #ffffff 50%, #00b140 50%); /* Using a nod to the Welsh Dragon Green instead of Polish Red */
+         background: linear-gradient(to bottom, #ffffff 50%, #00b140 50%); 
         width: 100%;
         padding: 15px 0;
         height: 60px;
@@ -2261,12 +2210,15 @@ function generateHandsfree() {
         .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 5px; color: var(--text); border-radius: 50%; transition: background 0.2s; }
         .icon-btn:active { background: rgba(0,0,0,0.1); }
 
-        .game-area { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; width: 100%; position: relative; }
-        
+        .game-area { 
+            flex-grow: 1; padding: 15px 15px 5px 15px; overflow-y: auto; 
+            display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; width: 100%; position: relative; 
+        }
+                
         .display-box { 
-            text-align: center; margin-bottom: 20px; min-height: 140px; 
+            text-align: center; margin-bottom: 15px; min-height: 110px; 
             display: flex; flex-direction: column; justify-content: center; 
-            background: var(--card); border-radius: 16px; padding: 20px; 
+            background: var(--card); border-radius: 16px; padding: 15px; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); 
             position: relative; transition: border-color 0.3s;
         }
@@ -2303,16 +2255,20 @@ function generateHandsfree() {
             animation: pulse 2s infinite;
         }
 
-        .mc-grid { display: grid; gap: 12px; flex-grow: 1; align-content: start; margin-bottom: 100px; }
+        .mc-grid { 
+            display: grid; gap: 8px; flex-grow: 1; align-content: start; 
+            /* Removed margin-bottom: 100px; */
+        }
         .cols-2 { grid-template-columns: 1fr 1fr; }
         .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
         
         .mc-btn { 
             position:relative; background: var(--card); border: 1px solid var(--border); border-bottom-width: 3px;
-            border-radius: 12px; min-height: 65px; font-weight: 700; font-size: 0.95rem; color: var(--text); 
+            border-radius: 12px; min-height: 55px; font-weight: 700; font-size: 0.95rem; color: var(--text); 
             cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px; 
             transition: transform 0.1s, border-bottom-width 0.1s, margin-top 0.1s; word-break: break-word; text-align: center;
         }
+        
         .mc-btn:active { transform: translateY(2px); border-bottom-width: 1px; margin-top: 2px; }
         .mc-key-hint { position: absolute; top: 4px; left: 6px; font-size: 0.65rem; color: var(--primary); opacity: 0.6; }
         
@@ -2325,9 +2281,13 @@ function generateHandsfree() {
         .btn-check { width: 100%; background: var(--primary); color: white; padding: 15px; border-radius: 12px; font-weight: bold; border: none; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.2); }
 
         .footer { 
-            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); padding: 15px; 
+            background: var(--card); padding: 15px; 
             border-top: 1px solid var(--border); display: grid; gap: 12px; z-index: 100; height: 85px; 
-            grid-template-columns: 2fr 1fr 1fr 1fr; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); padding-bottom: env(safe-area-inset-bottom, 20px);
+            grid-template-columns: 2fr 1fr 1fr 1fr; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); 
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+            /* NEW: Let flexbox handle positioning instead of floating it */
+            position: relative;
+            flex-shrink: 0;
         }
         .btn-action { 
             border: none; border-radius: 12px; font-weight: 700; font-size: 0.9rem; color: white; cursor: pointer; 
@@ -2344,11 +2304,24 @@ function generateHandsfree() {
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-box { background: var(--card); width: 95%; max-width: 420px; padding: 25px; border-radius: 24px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.25); }
+        
+        /* THE STICKY CLOSE BUTTON UPDATE */
         .close-x { 
-            position: absolute; top: 20px; right: 20px; font-size: 1.5rem; 
+            position: sticky; 
+            top: -10px; 
+            z-index: 100; 
+            
+            display: flex; 
+            margin-left: auto; 
+            margin-right: -10px; 
+            margin-bottom: -15px; 
+            
+            font-size: 1.5rem; 
             background: var(--bg); width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; color: var(--text); 
-            display:flex; align-items:center; justify-content:center; 
+            align-items:center; justify-content:center; 
             border: 1px solid var(--border);
+            
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         
         .set-group { background: var(--bg); padding: 15px; border-radius: 16px; margin-bottom: 15px; border: 1px solid var(--border); }
@@ -2413,20 +2386,17 @@ function generateHandsfree() {
         .help-h { color: var(--secondary); font-weight: bold; margin-bottom: 8px; }
 
 #display-number {
-    /* Fluid font size that respects screen width */
     font-size: clamp(2.5rem, 12vw, 5rem);
     text-align: center;
     width: 100%;
 }
 body, .container {
-    /* Fixed height for all mobile browsers */
     height: 100vh;
     height: 100dvh; 
     margin: 0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    /* Background color should extend to the edges */
     background-color: var(--bg);
 }
 
