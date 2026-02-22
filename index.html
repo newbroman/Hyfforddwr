@@ -3,30 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hyfforddwr rhifau Cymraeg</title>
+    <title>Welsh Number Trainer</title>
     <meta name="theme-color" content="#ffffff">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197529.png">
 </head>
 <body onload="init()">
-<div id="handsfree-page" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg); z-index:9999; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px;">
-    
-    <div style="flex:1; display:flex; flex-direction:column; justify-content:center; width:100%;">
-        <div style="font-size:3rem; margin-bottom:10px;">🚗</div>
-        <div style="font-size:1rem; color:var(--primary); font-weight:bold; margin-bottom:40px; text-transform:uppercase;">Handsfree Mode Active</div>
-        
-        <div id="hf-pl-text" style="font-size:2.5rem; color:var(--text); font-weight:800; margin-bottom:20px; line-height:1.2;">---</div>
-        <div id="hf-en-text" style="font-size:1.5rem; color:#888; font-weight:500;">---</div>
-    </div>
-    
-    <button onclick="toggleHandsfree()" style="background:#ea4335; color:white; border:none; padding:20px 40px; border-radius:30px; font-size:1.2rem; font-weight:bold; margin-bottom:40px; cursor:pointer; box-shadow:0 4px 15px rgba(234, 67, 53, 0.4);">⏹ EXIT HANDSFREE</button>
-</div>
+
 <div class="brand-header">
     <div class="header-controls-left">
         <button class="icon-btn" onclick="toggleHelp()" title="Help">❓</button>
     </div>
-
-    <div class="brand-title">Hyfforddwr rhifau Cymraeg</div>
-
+    <div class="brand-title">Welsh Number Trainer</div>
     <div class="header-controls-right">
         <button class="icon-btn" onclick="toggleSettings()" title="Settings">⚙️</button>
     </div>
@@ -34,10 +21,10 @@
 
 <div class="status-bar">
     <div class="stats-group">
-        <div class="stat-item" id="stat-xp" title="Profiad (XP)">⭐ <span id="xp-display">0</span></div>
-        <div class="stat-item" id="stat-streak" title="Rhes">🔥 <span id="streak-display">0</span></div>
-        <div class="stat-item" id="stat-daily" title="Nod Dyddiol">🎯 <span id="daily-display">0/300</span></div>
-        <div class="stat-item" id="stat-rank" title="Safle">🏆 <span id="rank-display">Dechreuwr</span></div>
+        <div class="stat-item" title="XP">⭐ <span id="xp-display">0</span></div>
+        <div class="stat-item" title="Streak">🔥 <span id="streak-display">0</span></div>
+        <div class="stat-item" title="Daily Goal">🎯 <span id="daily-display">0/300</span></div>
+        <div class="stat-item" title="Rank">🏆 <span id="rank-display">Novice</span></div>
     </div>
 </div>
 
@@ -58,10 +45,10 @@
 
     <div id="mc-area" class="mc-grid cols-2"></div>
     
-  <div id="type-area" class="type-container">
-    <input type="number" id="type-input" class="type-input" placeholder="Teipiwch rif..." autocomplete="off">
-    <button class="btn-check" id="type-btn" onclick="handleMainButton()">GWIRIO</button>
-</div>
+    <div id="type-area" class="type-container">
+        <input type="text" id="type-input" class="type-input" placeholder="Type answer..." autocomplete="off">
+        <button class="btn-check" id="action-btn" onclick="checkTyped()">CHECK ANSWER</button>
+    </div>
     
     <div id="voice-controls" style="display:none; text-align:center; margin-top:-10px; color:#666;">
         <p>Tap the mic and say the Welsh word.</p>
@@ -76,9 +63,8 @@
     
     <button class="btn-action" id="mic-btn" style="background:#ea4335; font-size:1.5rem;" onclick="toggleMic()">🎙️</button>
     <button class="btn-action btn-hf" id="hf-btn" onclick="toggleHandsfree()">🚗</button>
-    <button class="btn-action btn-next" id="main-btn" onclick="generate()">HEPGOR ➡️</button>
+    <button class="btn-action btn-next" id="main-btn" onclick="generate()">SKIP ➡️</button>
 </div>
-
 
 <div id="settings-modal" class="modal">
     <div class="modal-box">
@@ -96,18 +82,16 @@
                 <button class="mode-btn" onclick="selectMode('gender')" id="nav-gender"><span>🚻</span> Gender</button>
                 <button class="mode-btn" onclick="selectMode('ordinal')" id="nav-ordinal"><span>🥇</span> Ordinals</button>
                 <button class="mode-btn" onclick="selectMode('phone')" id="nav-phone"><span>📱</span> Phone Nos</button>
-                <button class="mode-btn" id="nav-translator" onclick="selectMode('translator')">🔤  Translate</button>
+                <button class="mode-btn" id="nav-translator" onclick="selectMode('translator')">🔤</button>
            </div>
         </div>
 
         <div class="set-group" style="border: 2px solid var(--secondary); background: rgba(52, 168, 83, 0.05);">
             <div class="set-title" style="color:var(--secondary)">🚀 Campaign Mode</div>
-            
             <div class="set-row">
                 <span>Enable Auto-Difficulty</span>
                 <input type="checkbox" id="campaign-toggle" onchange="toggleCampaign()">
             </div>
-
             <div id="campaign-controls" style="display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--secondary);">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <button class="icon-btn" onclick="adjustLevel(-1)" style="background:white; width:32px; height:32px; box-shadow:0 1px 3px rgba(0,0,0,0.1)">➖</button>
@@ -120,15 +104,13 @@
             </div>
         </div>
 
-<div class="set-group" id="set-range">
+        <div class="set-group" id="set-range">
             <div class="set-title">Manual Options</div>
-
             <div id="manual-sliders">
                 <div class="set-row">
                     <span>Min: <span id="lbl-min">1</span></span>
                    <div style="width:50%"><input type="range" id="minP" min="0" max="6" value="0" oninput="updateRange()"></div>
                 </div>
-
                 <div class="set-row">
                     <span>Max: <span id="lbl-max">100</span></span>
                    <div style="width:50%"><input type="range" id="maxP" min="1" max="7" value="2" oninput="updateRange()"></div>
@@ -137,25 +119,13 @@
 
             <div id="modifiers-box" style="margin-top:15px; padding-top:10px; border-top:1px solid #eee;">
                 <div class="set-title">Challenge Modes</div>
-                
-                <div class="set-row">
-                    <span>Negatives (Minws)</span>
-                    <input type="checkbox" id="negatives-toggle">
-                </div>
-
-                <div class="set-row">
-                    <span>Decimals (Pwyntiau)</span>
-                    <input type="checkbox" id="decimal-toggle" onchange="toggleDecimals()">
-                </div>
+                <div class="set-row"><span>Negatives (Minws)</span><input type="checkbox" id="negatives-toggle"></div>
+                <div class="set-row"><span>Decimals (Pwyntiau)</span><input type="checkbox" id="decimal-toggle" onchange="toggleDecimals()"></div>
                 <div id="decimal-opts" class="set-row" style="display:none; font-size:0.9rem; color:#666; padding-left:10px;">
                     <span>Decimal Places:</span>
                     <input type="number" id="decimal-places" value="1" min="1" max="2" style="width:50px">
                 </div>
-
-                <div class="set-row">
-                    <span>Fractions (Ffracsiynau)</span>
-                    <input type="checkbox" id="fractions-toggle" onchange="toggleFractions()">
-                </div>
+                <div class="set-row"><span>Fractions (Ffracsiynau)</span><input type="checkbox" id="fractions-toggle" onchange="toggleFractions()"></div>
                 <div id="fraction-opts" class="set-row" style="display:none; font-size:0.9rem; color:#666; padding-left:10px;">
                     <span>Include Mixed (1 ½)</span>
                     <input type="checkbox" id="mixed-numbers-toggle">
@@ -184,20 +154,10 @@
                 </select>
             </div>
         </div>
-        <div class="set-group" id="set-speech-opts" style="display:none">
-            <div class="set-title">Speaking Topics</div>
-            <div class="set-row"><span>Numbers</span><input type="checkbox" id="speech-numbers" checked></div>
-            <div class="set-row"><span>Prices</span><input type="checkbox" id="speech-prices" checked></div>
-            <div class="set-row"><span>Time</span><input type="checkbox" id="speech-time" checked></div>
-            <div class="set-row"><span>Context</span><input type="checkbox" id="speech-context" checked></div>
-        </div>
         
         <div class="set-group" id="set-gameplay">
             <div class="set-title">Gameplay</div>
-            <div class="set-row">
-                <span>Blind Mode (No Text)</span>
-                <input type="checkbox" id="blind-toggle">
-            </div>
+            <div class="set-row"><span>Blind Mode (No Text)</span><input type="checkbox" id="blind-toggle"></div>
         </div>
 
         <div class="set-group" id="set-display">
@@ -228,7 +188,6 @@
             </div>
         </div>
         <button class="btn-check" onclick="saveAndGenerate()">Save & Restart</button>
-
     </div>
 </div>
 
@@ -243,18 +202,14 @@
 <div id="help-modal" class="modal">
     <div class="modal-box">
         <button class="close-x" onclick="toggleHelp()">×</button>
-        
-        <div class="tab-header" style="border:none; margin-bottom:20px; position:relative;">
-            <select id="help-nav-dropdown" onchange="setHelpTab(this.value)" style="width:100%; padding:12px; font-size:1rem; font-weight:bold; border-radius:12px; border:2px solid var(--primary); background:var(--card); color:var(--text); appearance:none; -webkit-appearance:none; padding-right:40px; cursor:pointer;">
+        <div class="tab-header" style="border:none; margin-bottom:20px;">
+            <select id="help-nav-dropdown" onchange="setHelpTab(this.value)" style="width:100%; padding:12px; font-size:1rem; font-weight:bold; border-radius:12px; border:2px solid var(--primary); background:var(--card); color:var(--text);">
                 <option value="guide">📖 User Guide</option>
                 <option value="grammar">🧠 Grammar Rules</option>
                 <option value="gamemodes">🎮 Game Modes</option>
                 <option value="campaign">🚀 Campaign Info</option>
                 <option value="progress">📊 My Stats</option>
             </select>
-            <div style="position:absolute; right:15px; top:50%; transform:translateY(-50%); pointer-events:none; font-size:1.2rem; color:var(--primary);">
-                ▼
-            </div>
         </div>
 
        <div id="tab-guide" class="tab-content active">
@@ -264,7 +219,6 @@
                 <p class="help-p">2. Select the matching number/phrase.</p>
                 <p class="help-p">3. Answer quickly for bonus points!</p>
             </div>
-            
             <div class="help-sec">
                 <div class="help-h">⚔️ Campaign vs. Practice</div>
                 <div style="background:var(--callout-bg-blue); padding:10px; border-radius:8px; border:1px solid var(--callout-border-blue); margin-bottom:10px;">
@@ -276,97 +230,31 @@
                 <p class="help-p" style="margin:0; font-size:0.85rem;">Turn off Auto Campaign to use Manual Sliders. You pick the exact number ranges to drill. Earns Practice XP.</p>
                 </div>
             </div>
-
             <div class="help-sec">
                 <div class="help-h">🏆 Scoring & XP</div>
                 <p class="help-p"><span class="point-tag pt-green">+10 XP</span> Base Score</p>
                 <p class="help-p"><span class="point-tag pt-green">+5 XP</span> Speed Bonus (< 3s)</p>
                 <p class="help-p"><span class="point-tag pt-red">-5 XP</span> Wrong Answer</p>
             </div>
-
             <div class="help-sec">
                 <div class="help-h">⏳ Time Penalties</div>
                 <p class="help-p"><span class="point-tag" style="background:#444; color:white;">> 7s</span> <b>-2 XP</b></p>
                 <p class="help-p"><span class="point-tag" style="background:#000; color:white;">> 13s</span> <b>-4 XP</b></p>
                 <p class="help-p" style="font-size:0.85rem; color:#666; margin-top:5px;"><i>*Answers taking longer than 20s are ignored (assumes you got distracted).</i></p>
-                <p class="help-p" style="font-size:0.85rem; color:var(--error); margin-top:2px;"><i>*Slow correct answers (7s-20s) are marked as "Needs Work".</i></p>
             </div>
-
             <div class="help-sec">
                 <div class="help-h">🎹 Controls</div>
                 <p class="help-p"><b>🔊 Toggle:</b> Change audio speed (Fast/Slow/V.Slow) by single, double or triple tap.</p>
                 <p class="help-p"><b>🎤 Mic Button:</b> Speak the answer (Dictation, more points).</p>   
                 <p class="help-p"><b>🚗 Handsfree:</b> Auto-play loop (perfect for driving, no points).</p>
                 <p class="help-p"><b>➡️ Skip:</b> Reveal answer (No points).</p>
-                <p class="help-p"><b>PC:</b> Use keys 1-8 to select answers.</p>
             </div>
-            
-           <div class="help-sec" style="border-top: 1px solid var(--border); margin-top: 20px; padding-top: 10px;">
-                <div class="help-h">⚠️ Audio & Browser Support</div>
-                <p class="help-p" style="font-size: 0.85rem;"><b>Recommended:</b> Chrome, Edge, or Safari. <br><b>Limited Support:</b> Firefox and Brave may block the Welsh voice engine by default.</p>
-                <p class="help-p" style="font-size: 0.85rem; margin-top: 8px;"><b>If silent:</b>
-                <br>• Tap the screen once to "wake up" the audio engine.
-                <br>• <b>Android and Apple Users:</b> See notes below on downloading the Welsh voice pack.
-                <br>• <b>Linux Users:</b> Ensure <code>espeak-ng</code> is installed via terminal.
-                <br>• <b>Brave Users:</b> Disable "Shields" or "Fingerprinting Protection" for this site.
-                <br>• <b>Firefox:</b> Go to <i>Settings > Privacy > Autoplay</i> and allow Audio.</p>
-            </div>
-
-            <div class="help-section" style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.03); border-radius: 12px; border: 1px solid var(--border);">
-                <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">
-                    <span>🔊</span> Setup Welsh Voice (Android)</h3>
-                <p style="font-size: 0.9rem; line-height: 1.4; margin-bottom: 12px;">
-                    Chrome and Samsung Internet rely on <b>Google Speech Services</b>. To hear a clear Welsh voice, you need to download the language pack manually:</p>
-                
-                <ol style="font-size: 0.85rem; padding-left: 20px; line-height: 1.6;">
-                    <li>Open your phone <b>Settings</b>.</li>
-                    <li>Go to <b>General Management</b> > <b>Language and Input</b> (or <i>System > Languages</i>).</li>
-                    <li>Tap on <b>Text-to-speech output</b>.</li>
-                    <li>Ensure <b>Speech Services by Google</b> is selected.</li>
-                    <li>Tap the <b>Settings (cog)</b> icon next to it.</li>
-                    <li>Tap <b>Install voice data</b>.</li>
-                    <li>Find <b>Welsh (United Kingdom)</b> and tap the download icon.</li>
-                </ol>
-
-                <div style="margin-top: 10px; padding: 10px; background: #fffbe6; border-left: 4px solid #ffe58f; border-radius: 4px; font-size: 0.8rem;">
-                    <strong>Tip:</strong> If it sounds robotic, ensure you have downloaded the "High Quality" version of the Welsh pack if available.
-                </div>
-
-                <button class="btn-review" onclick="speechSynthesis.speak(new SpeechSynthesisUtterance('Mae hyn yn gweithio\'n dda'))" style="margin-top:10px; background:var(--primary); color:white; width:100%; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">
-                    Test Audio (Welsh)
-                </button>
-            </div>
-
-            <div class="help-section" style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.03); border-radius: 12px; border: 1px solid var(--border);">
-                <h3 style="margin-top:0; color:var(--primary); display:flex; align-items:center; gap:8px;">
-                    <span>🍎</span> Setup Welsh Voice (Apple iOS)</h3>
-                <p style="font-size: 0.9rem; line-height: 1.4; margin-bottom: 12px;">
-                    Safari relies on system-level voices. If the audio is missing or sounds robotic, you must download the <b>cy-GB</b> language pack manually:</p>
-                
-                
-                <ol style="font-size: 0.85rem; padding-left: 20px; line-height: 1.6;">
-                    <li>Open your iPhone/iPad <b>Settings</b>.</li>
-                    <li>Go to <b>Accessibility</b> > <b>Spoken Content</b>.</li>
-                    <li>Tap on <b>Voices</b>.</li>
-                    <li>Scroll down and select <b>Welsh</b>.</li>
-                    <li>Tap the <b>Cloud (download)</b> icon next to <i>Geraint</i> or <i>Siri</i>.</li>
-                    <li><b>Important:</b> Fully close Safari and reopen the app for the new voice to take effect.</li>
-                </ol>
-
-                <div style="margin-top: 10px; padding: 10px; background: #fffbe6; border-left: 4px solid #ffe58f; border-radius: 4px; font-size: 0.8rem;">
-                    <strong>Tip:</strong> Ensure the <b>Physical Silent Switch</b> on the side of your iPhone is turned OFF. Apple often blocks web audio while in Silent Mode.
-                </div>
-
-                <button class="btn-review" onclick="speechSynthesis.speak(new SpeechSynthesisUtterance('Mae hyn yn gweithio\'n dda'))" style="margin-top:10px; background:var(--primary); color:white; width:100%; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">
-                    Test Audio (Apple Welsh)
-                </button>
-            </div>
+        </div>
 
          <div id="tab-grammar" class="tab-content">
             <div class="help-sec">
                 <div class="help-h">1. Initial Consonant Mutations (Treigladau)</div>
                 <p class="help-p">Unlike English where words change at the end (Dog -> Dogs), in Welsh, the <b>beginning</b> of the word changes depending on the number and gender.</p>
-                
                 <ul style="margin-top:10px; padding-left:20px; font-size:0.9rem; color:var(--text); line-height: 1.6;">
                     <li><strong>Treiglad Meddal (Soft Mutation):</strong> The most common change. It happens after the numbers <b>2</b> (dau/dwy) and to Feminine nouns after <b>1</b> (un).
                         <ul style="padding-left:15px; margin-top:5px; font-style: italic;">
@@ -382,7 +270,6 @@
                     </li>
                 </ul>
             </div>
-
             <div class="help-sec">
                 <div class="help-h">🚻 2. Gender (Rhyw): 1, 2, 3, and 4</div>
                 <p class="help-p">Nouns in Welsh are either Masculine or Feminine. The numbers 2, 3, and 4 have different forms depending on the noun's gender.</p>
@@ -390,96 +277,53 @@
                 <p class="help-p"><b>3:</b> tri (m), tair (f)</p>
                 <p class="help-p"><b>4:</b> pedwar (m), pedair (f)</p>
             </div>
-            
             <div class="help-sec">
                 <div class="help-h">3. The 11+ Rule (Modern Counting)</div>
                 <p class="help-p">Modern Welsh counting makes numbers larger than 10 very easy. Instead of complex plural rules, you use the number, add the word <b>"o"</b> (meaning "of"), and use the <b>Soft Mutated Plural</b> of the noun.</p>
-                
                 <ul style="margin-top:10px; padding-left:20px; font-size:0.9rem; color:var(--text); line-height: 1.6;">
                     <li><strong>1-10:</strong> Number + Singular Noun (e.g., 5 ci).</li>
                     <li><strong>11+:</strong> Number + "o" + Mutated Plural (e.g., 20 o gŵn).</li>
                 </ul>
             </div>
-
             <div class="help-sec">
                 <div class="help-h">🕒 4. Time (Amser)</div>
                 <p class="help-p">Telling time usually utilizes the everyday, casual spoken style to sound natural.</p>
                 <ul style="margin-top:5px; padding-left:20px; font-size:0.9rem; color:var(--text); line-height: 1.6;">
-                    <li><strong>Minutes past:</strong> Read as the minutes + "wedi" (past) + the hour.
-                        <br><span style="font-style: italic; font-size: 0.85rem;">Example: 2:10 is "deg wedi dau".</span>
-                    </li>
-                    <li><strong>Minutes to:</strong> Read as the minutes + "i" (to) + the next hour.
-                        <br><span style="font-style: italic; font-size: 0.85rem;">Example: 1:50 is "deg i ddau".</span>
-                    </li>
-                    <li><strong>Half-past:</strong> Uses the phrase "hanner awr wedi" (half an hour past).
-                        <br><span style="font-style: italic; font-size: 0.85rem;">Example: 2:30 is "hanner awr wedi dau".</span>
-                    </li>
+                    <li><strong>Minutes past:</strong> Read as the minutes + "wedi" (past) + the hour. (e.g. 2:10 is "deg wedi dau").</li>
+                    <li><strong>Minutes to:</strong> Read as the minutes + "i" (to) + the next hour. (e.g. 1:50 is "deg i ddwy"). Note that 'i' causes a Soft Mutation.</li>
+                    <li><strong>Half-past:</strong> Uses the phrase "hanner awr wedi" (half an hour past).</li>
                 </ul>
             </div>
-
         </div>
 
         <div id="tab-gamemodes" class="tab-content">
-            <p style="font-size:0.9rem; color:#666; margin-bottom:15px;">
-                Each mode targets a specific area of Welsh grammar.
-            </p>
-
-            <div class="set-group">
-                <div class="set-title">123 Numbers</div>
-                <p class="help-p">The core counting mode. Practice the standard Decimal Welsh counting system (Un deg pedwar = 14).</p>
-            </div>
-
-            <div class="set-group">
-                <div class="set-title">💬 Context (Sentences)</div>
-                <p class="help-p">Practice the 11+ Rule ("o" + Mutated Plural) and counting objects in real sentences.</p>
-                <div style="background:var(--callout-bg-orange); padding:8px; border-radius:6px; margin-top:8px; border:1px solid var(--callout-border-orange);"> 
-                    <p class="help-p" style="margin:0; font-size:0.85rem; color:var(--callout-text-orange);"><strong>Why are Digits disabled?</strong> The entire goal of this mode is to practice recognizing the correct mutation (e.g., <em>3 chi</em> vs <em>20 o gŵn</em>). Digits are intentionally disabled so you don't bypass the grammar rule!</p>
-                </div>
-            </div>
-
-           <div class="set-group">
-                <div class="set-title">$$ Prices</div>
-                <p class="help-p">Practice how prices are naturally spoken in everyday shops in Pounds (Punnoedd) and Pence (Ceiniogau).</p>
-            </div>
-
-            <div class="set-group">
-                <div class="set-title">🚻 Gender & Mutations</div>
-                <p class="help-p">Forces you to pick the correct gendered number (e.g., dau vs dwy) and the correctly mutated noun (e.g., cath vs gath vs chath).</p>
-                <div style="background:var(--callout-bg-orange); padding:8px; border-radius:6px; margin-top:8px; border:1px solid var(--callout-border-orange);">
-                 <p class="help-p" style="margin:0; font-size:0.85rem; color:var(--callout-text-orange);"><strong>Why are Digits disabled?</strong> Just like Context mode, you are forced to choose the correctly spelled word that matches the gender of the noun shown on the screen.</p>
-                </div>
-            </div>
-            
-            <div class="set-group">
-                <div class="set-title">🔤 Translator Mode</div>
-                <p class="help-p">Type any number (e.g., "1984" or "2.5") to hear it spoken and see how it is written.</p>
-            </div>
+            <p style="font-size:0.9rem; color:#666; margin-bottom:15px;">Each mode targets a specific area of Welsh grammar.</p>
+            <div class="set-group"><div class="set-title">123 Numbers</div><p class="help-p">The core counting mode. Practice the standard Decimal Welsh counting system.</p></div>
+            <div class="set-group"><div class="set-title">💬 Context (Sentences)</div><p class="help-p">Practice the 11+ Rule ("o" + Mutated Plural) and counting objects in real sentences.</p></div>
+            <div class="set-group"><div class="set-title">$$ Prices</div><p class="help-p">Practice how prices are naturally spoken in everyday shops in Pounds (Punnoedd) and Pence (Ceiniogau).</p></div>
+            <div class="set-group"><div class="set-title">🚻 Gender & Mutations</div><p class="help-p">Forces you to pick the correct gendered number and correctly mutated noun.</p></div>
+            <div class="set-group"><div class="set-title">🔤 Translator Mode</div><p class="help-p">Type any number to hear it spoken and see how it is written.</p></div>
         </div>
 
         <div id="tab-campaign" class="tab-content">
-            <p style="font-size:0.9rem; color:#666; margin-bottom:15px;"><strong>Auto Campaign</strong> guides you through 6 levels of difficulty. If you find the game too easy, in the settings tab you can skip to a higher level or switch to Manual mode to work on certain areas.</p>
-            <div class="set-group"><div class="set-title">Lvl 1: Novice (1-200)</div><p class="help-p">The basics. Mastering 1-10 and building decades (un deg, dau ddeg).</p></div>
-            <div class="set-group"><div class="set-title">Lvl 2: Apprentice (200-5,000)</div><p class="help-p"><b>Focus:</b> Hundreds (cant/gant/chant) pattern.<br><b>New:</b> Gender & Prices.</p></div>
-            <div class="set-group"><div class="set-title">Lvl 3: Journeyman (5,000-10,000)</div><p class="help-p"><b>Focus:</b> Thousands (mil/fil).<br><b>New:</b> Time (Clock) & Negative Numbers.</p></div>
-            <div class="set-group"><div class="set-title">Lvl 4: Expert (10,000-20,000)</div><p class="help-p"><b>Focus:</b> Mastery of large numbers.<br><b>New:</b> Dates & Decimals.</p></div>
-            <div class="set-group"><div class="set-title">Lvl 5: Master (20,000-50,000)</div><p class="help-p"><b>Focus:</b> Large scale numbers.<br><b>New:</b> Context (Sentences & Mutations).</p></div>
-            <div class="set-group"><div class="set-title">Lvl 6: Guru (>50,0000)</div><p class="help-p"><b>Final Challenge.</b><br><b>New:</b> Fractions (1/2) & Mixed Numbers.</p></div>
+            <p style="font-size:0.9rem; color:#666; margin-bottom:15px;"><strong>Auto Campaign</strong> guides you through 6 levels of difficulty.</p>
+            <div class="set-group"><div class="set-title">Lvl 1: Novice (1-200)</div><p class="help-p">The basics. Mastering 1-10 and decades.</p></div>
+            <div class="set-group"><div class="set-title">Lvl 2: Apprentice (200-5,000)</div><p class="help-p">Hundreds pattern, Gender & Prices.</p></div>
+            <div class="set-group"><div class="set-title">Lvl 3: Journeyman (5,000-10,000)</div><p class="help-p">Thousands, Time (Clock) & Negatives.</p></div>
+            <div class="set-group"><div class="set-title">Lvl 4: Expert (10,000-20,000)</div><p class="help-p">Mastery of large numbers, Dates & Decimals.</p></div>
+            <div class="set-group"><div class="set-title">Lvl 5: Master (20,000-50,000)</div><p class="help-p">Large scale numbers, Context (Sentences & Mutations).</p></div>
+            <div class="set-group"><div class="set-title">Lvl 6: Guru (>50,0000)</div><p class="help-p">Final Challenge. Fractions & Mixed Numbers.</p></div>
         </div>
 
-        <div id="tab-progress" class="tab-content">
-            <div id="stats-container"></div>
-        </div>
+        <div id="tab-progress" class="tab-content"><div id="stats-container"></div></div>
     </div>
 </div>
 
 <script>
-    // --- PART 1: WELSH DATA DICTIONARY ---
+    // --- WELSH DATA DICTIONARY ---
     const UNITS = ["dim", "un", "dau", "tri", "pedwar", "pump", "chwech", "saith", "wyth", "naw"];
     const UNITS_FEM = ["dim", "un", "dwy", "tair", "pedair", "pump", "chwech", "saith", "wyth", "naw"];
-    
-    // UPDATED: 'deg' changed to 'un deg' so 11 becomes 'un deg un' instead of 'deg un'
-    const TENS = ["", "un deg", "dau ddeg", "tri deg", "pedwar deg", "pum deg", "chwe deg", "saith deg", "wyth deg", "naw deg"];
-    
+    const TENS = ["", "deg", "dau ddeg", "tri deg", "pedwar deg", "pum deg", "chwe deg", "saith deg", "wyth deg", "naw deg"];
     const HUNDREDS = ["", "cant", "dau gant", "tri chant", "pedwar cant", "pum cant", "chwe chant", "saith cant", "wyth cant", "naw cant"];
 
     const MONTHS_CY = ["Ionawr", "Chwefror", "Mawrth", "Ebrill", "Mai", "Mehefin", "Gorffennaf", "Awst", "Medi", "Hydref", "Tachwedd", "Rhagfyr"];
@@ -490,34 +334,26 @@
     const ORDINAL_CY = ["", "cyntaf", "ail", "trydydd", "pedwerydd", "pumed", "chweched", "seithfed", "wythfed", "nawfed", "degfed", "unfed ar ddeg", "deuddegfed", "trydydd ar ddeg", "pedwerydd ar ddeg", "pymthegfed", "unfed ar bymtheg", "ail ar bymtheg", "deunawfed", "pedwerydd ar bymtheg", "ugeinfed", "unfed ar hugain", "ail ar hugain", "trydydd ar hugain", "pedwerydd ar hugain", "pumed ar hugain", "chweched ar hugain", "seithfed ar hugain", "wythfed ar hugain", "nawfed ar hugain", "degfed ar hugain", "unfed ar ddeg ar hugain"];
 
     const FRACTIONS = {
-        2:  "hanner",
-        3:  "traean",
-        4:  "pedwerydd",
-        5:  "pumed",
-        6:  "chweched",
-        7:  "seithfed",
-        8:  "wythfed",
-        9:  "nawfed",
-        10: "degfed",
-        100: "canfed"
+        2:  { word: "hanner", form: "m", soft: "hanner", asp: "hanner", plSoft: "hanneri" },
+        3:  { word: "traean", form: "m", soft: "draean", asp: "thraean", plSoft: "draeanoedd" },
+        4:  { word: "chwarter", form: "m", soft: "chwarter", asp: "chwarter", plSoft: "chwarteri" },
+        5:  { word: "pumed", form: "m", soft: "bumed", asp: "phumed", plSoft: "bumedau" },
+        6:  { word: "chweched", form: "m", soft: "chweched", asp: "chweched", plSoft: "chwechedau" },
+        7:  { word: "seithfed", form: "m", soft: "seithfed", asp: "seithfed", plSoft: "seithfedau" },
+        8:  { word: "wythfed", form: "m", soft: "wythfed", asp: "wythfed", plSoft: "wythfedau" },
+        9:  { word: "nawfed", form: "m", soft: "nawfed", asp: "nawfed", plSoft: "nawfedau" },
+        10: { word: "degfed", form: "m", soft: "ddegfed", asp: "degfed", plSoft: "ddegfedau" },
+        100:{ word: "canfed", form: "m", soft: "ganfed", asp: "chanfed", plSoft: "ganfedau" }
     };
 
     const RANKS = [
-        { limit: 0, name: "Dechreuwr" },     // Novice (Beginner)
-        { limit: 200, name: "Prentis" },     // Apprentice
-        { limit: 5000, name: "Crefftwr" },   // Journeyman (Craftsman)
-        { limit: 10000, name: "Arbenigwr" }, // Expert
-        { limit: 20000, name: "Meistr" },    // Master
-        { limit: 50000, name: "Gwrw" }       // Guru
+        { limit: 0, name: "Novice" }, { limit: 200, name: "Apprentice" }, { limit: 5000, name: "Journeyman" },
+        { limit: 10000, name: "Expert" }, { limit: 20000, name: "Master" }, { limit: 50000, name: "Guru" }
     ];
 
-   const PRACTICE_RANKS = [
-        { limit: 0, name: "Ymwelydd" },      // Tourist (Visitor)
-        { limit: 500, name: "Dysgwr" },      // Trainee (Learner)
-        { limit: 5000, name: "Ymdrechwr" },  // Grinder (Striver / Hard Worker)
-        { limit: 10000, name: "Seliwr" },    // Gym Rat (Enthusiast / Devotee)
-        { limit: 25000, name: "Hen Law" },   // Veteran (Literally "Old Hand", a great Welsh idiom)
-        { limit: 50000, name: "Chwedl" }     // Legend
+    const PRACTICE_RANKS = [
+        { limit: 0, name: "Tourist" }, { limit: 500, name: "Trainee" }, { limit: 5000, name: "Grinder" },
+        { limit: 10000, name: "Gym Rat" }, { limit: 25000, name: "Veteran" }, { limit: 50000, name: "Legend" }
     ];
 
     const GENDER_NOUNS = [
@@ -554,10 +390,10 @@
     ];
 
     const GRAMMAR = {
-        "cost": { base: "punt", plSoft: "bunnoedd", phrase: "Mae'n costio [N] [W]", enPhrase: "It costs [N] pounds", max: 1000 },
-        "hours": { base: "awr", plSoft: "oriau", phrase: "Dw i'n aros am [N] [W]", enPhrase: "I wait [N] hours", max: 24 },
-        "people": { base: "person", plSoft: "bobl", phrase: "Mae yna [N] [W] yma", enPhrase: "There are [N] people here", max: 5000 },
-        "distance": { base: "milltir", plSoft: "filltiroedd", phrase: "Rhedais i [N] [W]", enPhrase: "I ran [N] miles", max: 100 }
+        "cost": { word: "punt", form: "f", soft: "bunt", asp: "phunt", plSoft: "bunnoedd", phrase: "Mae'n costio [N] [W]", enPhrase: "It costs [N] pounds", max: 1000 },
+        "hours": { word: "awr", form: "f", soft: "awr", asp: "awr", plSoft: "oriau", phrase: "Dw i'n aros am [N] [W]", enPhrase: "I wait [N] hours", max: 24 },
+        "people": { word: "person", form: "m", soft: "berson", asp: "pherson", plSoft: "bobl", phrase: "Mae yna [N] [W] yma", enPhrase: "There are [N] people here", max: 5000 },
+        "distance": { word: "milltir", form: "f", soft: "filltir", asp: "milltir", plSoft: "filltiroedd", phrase: "Rhedais i [N] [W]", enPhrase: "I ran [N] miles", max: 100 }
     };
 
     // --- GLOBAL STATE ---
@@ -573,7 +409,7 @@
     
     // --- PERSISTENT DATA ---
     let mistakes = JSON.parse(localStorage.getItem('mistakes') || "[]");
-    let categoryStats = JSON.parse(localStorage.getItem('catStats') || '{"numbers":0,"context":0,"prices":0,"dates":0,"time":0,"gender":0}');
+    let categoryStats = JSON.parse(localStorage.getItem('catStats') || '{"numbers":0,"context":0,"prices":0,"dates":0,"time":0,"gender":0,"ordinal":0,"phone":0}');
     
     // --- AUDIO & TIMERS ---
     let autoNextTimer = null;
@@ -586,33 +422,7 @@
     
     // --- SPEECH RECOGNITION ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition;
-
-    if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.lang = 'cy-GB'; 
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        recognition.onerror = (event) => {
-            if (event.error === 'service-not-allowed') {
-                alert("Gwall: Gwiriwch fod yr ap Google wedi'i alluogi a bod caniatâd meicroffon wedi'i roi.");
-            }
-            console.error("Speech Error:", event.error);
-        };
-    }
-
-    function updateMicButtonVisibility() {
-        const micBtn = document.getElementById('mic-btn');
-        if (!micBtn) return;
-        if (!SpeechRecognition) {
-            micBtn.style.display = 'none';
-        } else {
-            micBtn.style.display = 'flex'; 
-        }
-    }
-    
+    let recognition = null;
     let isListening = false;
     let userInteracted = false;
 
@@ -647,7 +457,14 @@
             toggleCampaign(); 
         }
 
+        // Setup Mic
         if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'cy-GB';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            
             recognition.onstart = function() {
                 isListening = true;
                 document.getElementById('mic-btn').style.background = "#34a853";
@@ -683,7 +500,7 @@
             if (state.audioPlaying) return; 
             if (state.solved && state.mode !== 'translator') { if (e.key === 'Enter') generate(); return; }
             if (document.getElementById('input-style').value === 'type' || state.mode === 'translator' || state.mode === 'dictation') {
-                if (e.key === 'Enter') handleMainButton();
+                if (e.key === 'Enter') checkTyped();
             } else {
                 if (!isNaN(parseInt(e.key)) && e.key !== '0') {
                     const idx = parseInt(e.key) - 1;
@@ -808,39 +625,21 @@
         document.getElementById('badge-review').style.display = 'none';
 
         if (state.mode === 'translator') {
-             document.getElementById('cy-text').innerText = "Teipiwch rif...";
+             document.getElementById('cy-text').innerText = "Type a number...";
              document.getElementById('display-box').classList.add('trans-active');
-             applySettings(); 
-             
-             const inputEl = document.getElementById('type-input');
-             inputEl.value = "";
-             
-             const actionBtn = document.getElementById('type-btn');
-             if (actionBtn) {
-                 actionBtn.style.display = 'flex'; 
-                 actionBtn.innerText = "LLEFARU 🔊";
-                 actionBtn.onclick = translateAndSpeak;
-             }
-             
-             setTimeout(() => inputEl.focus(), 50);
-             return; 
-
+             document.getElementById('type-input').value = "";
+             document.getElementById('type-input').focus();
+             document.getElementById('main-btn').style.display = 'none'; 
+             document.getElementById('action-btn').innerText = "TRANSLATE & SPEAK 🔊";
+             return;
         } else {
             document.getElementById('display-box').classList.remove('trans-active');
-            
-            const plBox = document.getElementById('pl-text') || document.getElementById('cy-text');
-            if (plBox) { plBox.classList.remove('visible'); plBox.innerText = ""; }
-            if (enBox) { enBox.classList.remove('visible'); enBox.innerText = ""; }
-
-            const typeBtn = document.getElementById('type-btn');
-            if (typeBtn) {
-                typeBtn.innerText = "GWIRIO";
-                typeBtn.onclick = handleMainButton; 
-            }
+            document.getElementById('main-btn').style.display = 'flex';
+            document.getElementById('action-btn').innerText = "CHECK ANSWER";
         }
 
         const mainBtn = document.getElementById('main-btn');
-        mainBtn.innerText = "HEPGOR ➡️"; 
+        mainBtn.innerText = "SKIP ➡️"; 
         mainBtn.classList.remove('ready'); 
         document.getElementById('type-input').value = "";
         document.getElementById('type-input').style.borderColor = "var(--border)";
@@ -862,12 +661,14 @@
                 document.getElementById('fraction-opts').style.display = 'none';
             }
 
-            if (lvl === 1) { min = 1; max = 20; allowedModes = ['numbers']; }
-            else if (lvl === 2) { min = 1; max = 100; allowedModes = ['numbers', 'gender', 'prices']; }
-            else if (lvl === 3) { min = 1; max = 1000; allowedModes = ['numbers', 'gender', 'prices', 'time'];
+            if (lvl === 1) { min = 1; max = 200; allowedModes = ['numbers']; }
+            else if (lvl === 2) { min = 1; max = 5000; allowedModes = ['numbers', 'gender', 'prices']; }
+            else if (lvl === 3) { 
+                min = 1; max = 10000; allowedModes = ['numbers', 'gender', 'prices', 'time'];
                 if (state.mode === 'numbers') document.getElementById('negatives-toggle').checked = true;
             }
-            else if (lvl === 4) {min = 1; max = 10000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates']; 
+            else if (lvl === 4) { 
+                min = 1; max = 20000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates']; 
                 if (state.mode === 'numbers') {
                     document.getElementById('negatives-toggle').checked = true;
                     document.getElementById('decimal-toggle').checked = true;
@@ -875,7 +676,7 @@
                 }
             }
             else if (lvl === 5) { 
-                min = 1; max = 100000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates', 'context']; 
+                min = 1; max = 50000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates', 'context']; 
                 if (state.mode === 'numbers') {
                     document.getElementById('negatives-toggle').checked = true;
                     document.getElementById('decimal-toggle').checked = true;
@@ -883,7 +684,7 @@
                 }
             }
             else { 
-                min = 1; max = 100000000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates', 'context']; 
+                min = 1; max = 100000000; allowedModes = ['numbers', 'gender', 'prices', 'time', 'dates', 'context', 'ordinal', 'phone']; 
                 if (state.mode === 'numbers') {
                     document.getElementById('negatives-toggle').checked = true;
                     document.getElementById('decimal-toggle').checked = true;
@@ -937,9 +738,12 @@
             cyBox.classList.add('visible'); 
             if (badge) badge.classList.add('visible'); 
         }
-        else if (state.mode === 'dates') { 
+        else if (state.mode === 'dates' || state.mode === 'ordinal' || state.mode === 'phone') { 
             enBox.classList.add('visible'); 
             if (badge) badge.classList.add('visible'); 
+        }
+        else if (state.rawData && state.rawData.type === 'fraction') {
+            if (badge) badge.classList.add('visible');
         }
         
         if (document.getElementById('blind-toggle').checked) document.getElementById('badge-blind').style.display = 'block';
@@ -970,7 +774,6 @@
                 const denoms = [2, 3, 4, 5, 6, 8, 10, 100];
                 let d = denoms[Math.floor(Math.random() * denoms.length)];
                 let n = Math.floor(Math.random() * (d - 1)) + 1; 
-                
                 let integer = 0;
                 if (document.getElementById('mixed-numbers-toggle').checked && Math.random() < 0.5) {
                     integer = Math.floor(Math.random() * 50) + 1; 
@@ -1013,19 +816,10 @@
             let dow = Math.floor(Math.random()*7);
             return {d, m:mIdx, y, dow};
         }
-       else if (activeMode === 'phone' || state.mode === 'phone') {
-            const isMobile = Math.random() < 0.6; 
-            let p1, p2, p3;
-
-            if (isMobile) {
-                p1 = "07" + Math.floor(Math.random() * 900 + 100).toString();
-            } else {
-                p1 = "01" + Math.floor(Math.random() * 900 + 100).toString();
-            }
-            
-            p2 = Math.floor(Math.random() * 900 + 100).toString(); 
-            p3 = Math.floor(Math.random() * 900 + 100).toString(); 
-            
+        else if (m === 'phone') {
+            let p1 = "07" + (Math.floor(Math.random() * 900) + 100).toString(); 
+            let p2 = (Math.floor(Math.random() * 900) + 100).toString(); 
+            let p3 = (Math.floor(Math.random() * 900) + 100).toString(); 
             return { p1, p2, p3 };
         }
         else if (m === 'ordinal') {
@@ -1051,7 +845,30 @@
 
     function addToHistory(val) { state.history.push(val); if(state.history.length > 5) state.history.shift(); }
     function isRepeated(val) { return state.history.some(h => JSON.stringify(h) === JSON.stringify(val)); }
-    function readDecimalPart(str) { return str.split('').map(d => numToCy(parseInt(d))).join(' '); }
+    
+    // Helper to read strings of numbers digit-by-digit
+    function readDigitsCY(str) {
+        return str.toString().split('').map(d => numToCy(parseInt(d))).join(' ');
+    }
+    
+    // Read numbers after decimal point
+    function readDecimalPart(str) { 
+        return str.split('').map(d => numToCy(parseInt(d))).join(' '); 
+    }
+
+    // Get English ordinal suffix
+    function getOrdinalEN(n) {
+        let s = ["th", "st", "nd", "rd"];
+        let v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    }
+
+    // Get Welsh ordinal with correct Y/Yr article
+    function getOrdinalCY(n) {
+        let word = ORDINAL_CY[n] || n.toString(); 
+        let article = /^[aeiouwy]/i.test(word) ? "Yr" : "Y";
+        return `${article} ${word}`;
+    }
 
     function numToCy(n, isFeminine = false) { 
         if (isNaN(n)) return "..."; 
@@ -1098,13 +915,32 @@
             if (dispH === 0) dispH = 12;
             let hNext = (dispH === 12) ? 1 : dispH + 1;
 
-            if (m === 0) return numToCy(dispH) + " o'r gloch";
-            if (m === 15) return "chwarter wedi " + numToCy(dispH);
-            if (m === 30) return "hanner awr wedi " + numToCy(dispH);
-            if (m === 45) return "chwarter i " + numToCy(hNext);
+            function getHr(hrVal, mutate = false) {
+                let base = "";
+                if (hrVal === 2) base = "dwy";
+                else if (hrVal === 3) base = "tair";
+                else if (hrVal === 4) base = "pedair";
+                else if (hrVal === 11) base = "un ar ddeg";
+                else if (hrVal === 12) base = "deuddeg";
+                else base = numToCy(hrVal); 
+                
+                if (!mutate) return base;
+                if (hrVal === 2) return "ddwy";
+                if (hrVal === 3) return "dair";
+                if (hrVal === 4) return "bedair";
+                if (hrVal === 5) return "bump";
+                if (hrVal === 10) return "ddeg";
+                if (hrVal === 12) return "ddeuddeg";
+                return base; 
+            }
+
+            if (m === 0) return getHr(dispH) + " o'r gloch";
+            if (m === 15) return "chwarter wedi " + getHr(dispH);
+            if (m === 30) return "hanner awr wedi " + getHr(dispH);
+            if (m === 45) return "chwarter i " + getHr(hNext, true);
             
-            if (m < 30) return numToCy(m) + " wedi " + numToCy(dispH);
-            return numToCy(60 - m) + " i " + numToCy(hNext);
+            if (m < 30) return numToCy(m) + " wedi " + getHr(dispH);
+            return numToCy(60 - m) + " i " + getHr(hNext, true);
         }
     }
 
@@ -1148,8 +984,8 @@
             let g = GRAMMAR[val.key]; 
             let n = val.val; 
             
-            let numTxt = numToCy(n); 
-            let word = (n > 10) ? ("o " + g.plSoft) : g.base; 
+            let numTxt = numToCy(n, g.form === 'f'); 
+            let word = (n > 10) ? ("o " + g.plSoft) : getWelshNounForm(n, g); 
             
             let fullPhrase = g.phrase.replace('[N]', numTxt).replace('[W]', word);
             state.currentEN = g.enPhrase.replace('[N]', n); 
@@ -1160,21 +996,35 @@
             
             const badge = document.getElementById('grammar-badge');
             if(badge) {
-                badge.innerText = n > 10 ? "Rule: 11+ (o + Plural)" : "Standard";
+                badge.innerText = n > 10 ? "Rule: 11+ (o + Plural)" : "Context Mutation";
                 badge.classList.add('visible');
             }
             return;
         }
 
         if (val && val.type === 'fraction') {
-            state.currentEN = `${val.n}/${val.d}`;
+            let intEn = val.int > 0 ? `${val.int} ` : "";
+            state.currentEN = `${intEn}${val.n}/${val.d}`;
+            
             let numText = numToCy(val.n);
-            let denText = FRACTIONS[val.d];
-            state.currentCY = `${numText} ${denText}`;
+            let fracObj = FRACTIONS[val.d];
+            let denText = getWelshNounForm(val.n, fracObj);
+            
+            if (val.n === 1 && val.d === 2) { numText = ""; denText = "hanner"; }
+            if (val.n === 1 && val.d === 4) { numText = ""; denText = "chwarter"; }
+            
+            let fracString = `${numText} ${denText}`.trim();
+            
+            if (val.int > 0) {
+                let a = /^[aeiouwy]/i.test(fracString) ? "ac" : "a";
+                state.currentCY = `${numToCy(val.int)} ${a} ${fracString}`;
+            } else {
+                state.currentCY = fracString;
+            }
             
             const badge = document.getElementById('grammar-badge');
             if(badge) {
-                badge.innerText = "FRACTION";
+                badge.innerText = "Fraction Mutations";
                 badge.classList.add('visible');
             }
             return;
@@ -1186,7 +1036,16 @@
                 if(!s.includes('.')) s += ".0"; 
                 let parts = s.split('.'); 
                 state.currentEN = s; 
-                state.currentCY = `${numToCy(parseInt(parts[0]))} pwynt ${readDecimalPart(parts[1])}`; 
+                
+                let intVal = parseInt(parts[0]);
+                let absInt = Math.abs(intVal);
+                let intStr = numToCy(intVal);
+                
+                let pwyntWord = "pwynt";
+                if (absInt === 2) pwyntWord = "bwynt";
+                else if (absInt === 3 || absInt === 6) pwyntWord = "phwynt";
+                
+                state.currentCY = `${intStr} ${pwyntWord} ${readDecimalPart(parts[1])}`; 
             } else { 
                 state.currentEN = val.toLocaleString(); 
                 state.currentCY = numToCy(val); 
@@ -1204,24 +1063,28 @@
                 state.currentCY = `${numToCy(n)} punt`;
             } else {
                 let pncText = numToCy(pnc);
-                state.currentCY = `${numToCy(n)} punt a ${pncText}`;
+                state.currentCY = `${numToCy(n)} ${pncText}`;
             }
         } 
         else if (m === 'phone') {
-            state.rawData = val;
             state.currentEN = `${val.p1} ${val.p2} ${val.p3}`;
+            state.currentCY = `${readDigitsCY(val.p1)}, ${readDigitsCY(val.p2)}, ${readDigitsCY(val.p3)}`;
             
-            const digitMap = {
-                '0': 'sero', '1': 'un', '2': 'dau', '3': 'tri', '4': 'pedwar',
-                '5': 'pump', '6': 'chwe', '7': 'saith', '8': 'wyth', '9': 'naw'
-            };
-            const readD = (s) => s.toString().split('').map(d => digitMap[d]).join(' ');
-
-            state.currentCY = `${readD(val.p1)}, ${readD(val.p2)}, ${readD(val.p3)}`;
+            const badge = document.getElementById('grammar-badge');
+            if (badge) {
+                badge.innerText = "Digit-by-Digit";
+                badge.classList.add('visible');
+            }
         }
         else if (m === 'ordinal') {
-            state.currentEN = val + "th"; 
-            state.currentCY = ORDINAL_CY[val] || val.toString();
+            state.currentEN = getOrdinalEN(val); 
+            state.currentCY = getOrdinalCY(val);
+            
+            const badge = document.getElementById('grammar-badge');
+            if (badge) {
+                badge.innerText = "Y vs Yr (Vowel Rule)";
+                badge.classList.add('visible');
+            }
         }
         else if (m === 'time') {
             state.currentEN = `${val.h.toString().padStart(2,'0')}:${val.m.toString().padStart(2,'0')}`; 
@@ -1243,7 +1106,8 @@
             enStr += `${MONTHS_EN[val.m]} ${val.d}`; 
             
             let dayText = ORDINAL_CY[val.d] || val.d.toString(); 
-            cyStr += `Y ${dayText} o fis ${MONTHS_CY[val.m]}`; 
+            let article = /^[aeiouwy]/i.test(dayText) ? "Yr" : "Y";
+            cyStr += `${article} ${dayText} o fis ${MONTHS_CY[val.m]}`; 
             
             if (includeYear) { 
                 enStr += ` ${val.y}`; 
@@ -1255,7 +1119,7 @@
             
             const badge = document.getElementById('grammar-badge');
             if (badge) {
-                badge.innerText = "Date Format";
+                badge.innerText = "Y vs Yr (Vowel Rule)";
                 badge.classList.add('visible');
             }
         }
@@ -1316,8 +1180,8 @@
                 let decoy = Math.floor(Math.random() * (max - min + 1)) + min;
                 if (answers.some(a => a.val === decoy)) continue;
 
-                let numTxt = numToCy(decoy);
-                let word = (decoy > 10) ? ("o " + g.plSoft) : g.base; 
+                let numTxt = numToCy(decoy, g.form === 'f');
+                let word = (decoy > 10) ? ("o " + g.plSoft) : getWelshNounForm(decoy, g); 
                 let phrase = g.phrase.replace('[N]', numTxt).replace('[W]', word);
                 answers.push({ text: phrase, val: decoy });
             }
@@ -1373,13 +1237,25 @@
 
                 try {
                     if (fakeVal && fakeVal.type === 'fraction') {
+                        let intEn = fakeVal.int > 0 ? `${fakeVal.int} ` : "";
                         if (showDigits) {
-                            fakeText = (fakeVal.int > 0) ? `${fakeVal.int} ${fakeVal.n}/${fakeVal.d}` : `${fakeVal.n}/${fakeVal.d}`;
+                            fakeText = `${intEn}${fakeVal.n}/${fakeVal.d}`;
                         } else {
                             let numText = numToCy(fakeVal.n);
-                            let denText = FRACTIONS[fakeVal.d];
-                            if (fakeVal.int > 0) fakeText = `${numToCy(fakeVal.int)} a ${numText} ${denText}`;
-                            else fakeText = `${numText} ${denText}`;
+                            let fracObj = FRACTIONS[fakeVal.d];
+                            let denText = getWelshNounForm(fakeVal.n, fracObj);
+                            
+                            if (fakeVal.n === 1 && fakeVal.d === 2) { numText = ""; denText = "hanner"; }
+                            if (fakeVal.n === 1 && fakeVal.d === 4) { numText = ""; denText = "chwarter"; }
+                            
+                            let fracString = `${numText} ${denText}`.trim();
+                            
+                            if (fakeVal.int > 0) {
+                                let a = /^[aeiouwy]/i.test(fracString) ? "ac" : "a";
+                                fakeText = `${numToCy(fakeVal.int)} ${a} ${fracString}`;
+                            } else {
+                                fakeText = fracString;
+                            }
                         }
                     } 
                     else if (state.mode === 'prices') {
@@ -1390,25 +1266,19 @@
                         } else {
                             if (n === 0) fakeText = `${numToCy(pnc)} ceiniog`;
                             else if (pnc === 0) fakeText = `${numToCy(n)} punt`;
-                            else fakeText = `${numToCy(n)} punt a ${numToCy(pnc)}`;
+                            else fakeText = `${numToCy(n)} ${numToCy(pnc)}`;
+                        }
+                    }
+                    else if (state.mode === 'phone') {
+                        if (showDigits) {
+                            fakeText = `${fakeVal.p1} ${fakeVal.p2} ${fakeVal.p3}`;
+                        } else {
+                            fakeText = `${readDigitsCY(fakeVal.p1)}, ${readDigitsCY(fakeVal.p2)}, ${readDigitsCY(fakeVal.p3)}`;
                         }
                     }
                     else if (state.mode === 'ordinal') {
-                        fakeText = showDigits ? fakeVal + "th" : (ORDINAL_CY[fakeVal] || fakeVal.toString());
+                        fakeText = showDigits ? getOrdinalEN(fakeVal) : getOrdinalCY(fakeVal);
                     }
-                    else if (state.mode === 'phone') {
-                            if (showDigits) {
-                                fakeText = `${fakeVal.p1} ${fakeVal.p2} ${fakeVal.p3}`;
-                            } else {
-                                const digitMap = {
-                                    '0': 'sero', '1': 'un', '2': 'dau', '3': 'tri', '4': 'pedwar',
-                                    '5': 'pump', '6': 'chwe', '7': 'saith', '8': 'wyth', '9': 'naw'
-                                };
-                                const readD = (s) => s.toString().split('').map(d => digitMap[d]).join(' ');
-                                
-                                fakeText = `${readD(fakeVal.p1)}, ${readD(fakeVal.p2)}, ${readD(fakeVal.p3)}`;
-                            }
-                        }
                     else if (state.mode === 'time') {
                         if (showDigits) {
                             fakeText = `${fakeVal.h.toString().padStart(2,'0')}:${fakeVal.m.toString().padStart(2,'0')}`;
@@ -1429,26 +1299,32 @@
                             if (!Number.isInteger(fakeVal)) {
                                 let s = fakeVal.toString(); if(!s.includes('.')) s += ".0"; 
                                 let parts = s.split('.'); 
-                                fakeText = `${numToCy(parseInt(parts[0]))} pwynt ${readDecimalPart(parts[1])}`;
+                                let intVal = parseInt(parts[0]);
+                                let absInt = Math.abs(intVal);
+                                let pwyntWord = "pwynt";
+                                if (absInt === 2) pwyntWord = "bwynt";
+                                else if (absInt === 3 || absInt === 6) pwyntWord = "phwynt";
+                                fakeText = `${numToCy(intVal)} ${pwyntWord} ${readDecimalPart(parts[1])}`;
                             } else {
                                 fakeText = numToCy(fakeVal);
                             }
                         }
                     }
                     else if (state.mode === 'dates') {
+                        let includeYear = document.getElementById('year-toggle').checked; 
+                        let includeDay = document.getElementById('day-toggle').checked;
                         if (showDigits) {
-                            let enStr = ""; 
-                            if (document.getElementById('day-toggle').checked) enStr += `${DAYS_EN[fakeVal.dow]}, `; 
-                            enStr += `${MONTHS_EN[fakeVal.m]} ${fakeVal.d}`; 
-                            if (document.getElementById('year-toggle').checked) enStr += ` ${fakeVal.y}`; 
-                            fakeText = enStr;
+                            fakeText = "";
+                            if (includeDay) fakeText += `${DAYS_EN[fakeVal.dow]}, `;
+                            fakeText += `${MONTHS_EN[fakeVal.m]} ${fakeVal.d}`;
+                            if (includeYear) fakeText += ` ${fakeVal.y}`;
                         } else {
-                            let cyStr = ""; 
-                            if (document.getElementById('day-toggle').checked) cyStr += `${DAYS_CY[fakeVal.dow]}, `; 
-                            let dayText = ORDINAL_CY[fakeVal.d] || fakeVal.d.toString(); 
-                            cyStr += `Y ${dayText} o fis ${MONTHS_CY[fakeVal.m]}`; 
-                            if (document.getElementById('year-toggle').checked) cyStr += ` ${numToCy(fakeVal.y)}`; 
-                            fakeText = cyStr;
+                            fakeText = "";
+                            if (includeDay) fakeText += `${DAYS_CY[fakeVal.dow]}, `;
+                            let dayText = ORDINAL_CY[fakeVal.d] || fakeVal.d.toString();
+                            let article = /^[aeiouwy]/i.test(dayText) ? "Yr" : "Y";
+                            fakeText += `${article} ${dayText} o fis ${MONTHS_CY[fakeVal.m]}`;
+                            if (includeYear) fakeText += ` ${numToCy(fakeVal.y)}`;
                         }
                     }
                 } catch (e) { console.log(e); fakeText = "---"; }
@@ -1498,7 +1374,6 @@
         if (isCorrect) { document.getElementById('voice-feedback').innerText = "Correct! " + cleanSpoken; document.getElementById('voice-feedback').style.color = "var(--secondary)"; win(document.getElementById('mic-btn')); } 
         else { document.getElementById('voice-feedback').innerText = "Heard: " + rawSpoken; document.getElementById('voice-feedback').style.color = "var(--error)"; document.getElementById('mic-btn').classList.add('wrong'); setTimeout(() => document.getElementById('mic-btn').classList.remove('wrong'), 500); }
     }
-    
     function toggleMic() { if (!recognition) { alert("Voice input not supported."); return; } if (isListening) recognition.stop(); else { initAudio(); recognition.start(); } }
 
     function win(btn) {
@@ -1525,15 +1400,10 @@
         let audioPenalty = state.audioClicks * 2;
         let timePenalty = 0;
         
-        if (timeTaken < 3) {
-            score += 5;
-        } else if (timeTaken > 20) {
-            timePenalty = 0;
-        } else if (timeTaken > 13) {
-            timePenalty = 4;
-        } else if (timeTaken > 7) {
-            timePenalty = 2;
-        }
+        if (timeTaken < 3) score += 5;
+        else if (timeTaken > 20) timePenalty = 0;
+        else if (timeTaken > 13) timePenalty = 4;
+        else if (timeTaken > 7) timePenalty = 2;
 
         let totalPenalty = audioPenalty + timePenalty; 
         if (score - totalPenalty < 1) totalPenalty = score - 1; 
@@ -1577,7 +1447,7 @@
         if (state.mode === 'context') { enBox.innerText = state.currentEN; cyBox.innerHTML = state.speechText; } 
         else { cyBox.innerText = state.currentCY; enBox.innerText = state.currentEN; }
         
-        const mainBtn = document.getElementById('main-btn'); mainBtn.innerText = "NESAF >>"; mainBtn.classList.add('ready');
+        const mainBtn = document.getElementById('main-btn'); mainBtn.innerText = "NEXT >>"; mainBtn.classList.add('ready');
         if (!state.handsfree) { setTimeout(() => speak(1.0), 400); autoNextTimer = setTimeout(generate, 3000); }
         updateUI();
     }
@@ -1599,78 +1469,40 @@
         updateUI();
     }
     
-    function toggleHandsfree() { 
-        state.handsfree = !state.handsfree; 
-        const hfPage = document.getElementById('handsfree-page');
-
-        if (state.handsfree) { 
-            hfPage.style.display = 'flex'; 
-            initAudio(); 
-            generateHandsfree(); 
-        } else { 
-            hfPage.style.display = 'none'; 
-            if (autoNextTimer) clearTimeout(autoNextTimer); 
-            window.speechSynthesis.cancel(); 
-            state.audioPlaying = false;
-            generate(); 
-        } 
-    }
-
-    function generateHandsfree() { 
-        if (!state.handsfree) return; 
-        
-        if (autoNextTimer) clearTimeout(autoNextTimer);
-        window.speechSynthesis.cancel(); 
-        state.audioPlaying = true;
-
-        let min = 1, max = 100;
-        if (document.getElementById('campaign-toggle').checked) {
-            let lblMin = document.getElementById('lbl-min').innerText.replace(/,/g, '');
-            let lblMax = document.getElementById('lbl-max').innerText.split(' ')[0].replace(/,/g, '');
-            min = parseInt(lblMin) || 1;
-            max = parseInt(lblMax) || 200;
-        } else {
-            min = Math.pow(10, document.getElementById('minP').value);
-            max = Math.pow(10, document.getElementById('maxP').value);
-        }
-
-        let newVal, safety = 0;
-        do { 
-            newVal = generateRawValue(min, max, state.mode); 
-            safety++; 
-        } while (isRepeated(newVal) && safety < 15);
-        
-        addToHistory(newVal);
-        processValue(newVal, state.mode);
-
-        let targetText = (state.mode === 'context') ? state.speechText : (state.currentPL || state.currentCY);
-        
-        document.getElementById('hf-pl-text').innerHTML = (state.mode === 'context') ? state.speechText : targetText;
-        document.getElementById('hf-en-text').innerText = state.currentEN;
-
-        let langCode = document.documentElement.lang === 'cy' ? 'cy-GB' : 'pl-PL';
-        
-        let u1 = new SpeechSynthesisUtterance(" " + targetText); u1.lang = langCode; u1.rate = 1.0; 
-        let u2 = new SpeechSynthesisUtterance(" " + state.currentEN); u2.lang = 'en-US'; u2.rate = 1.0; 
-        let u3 = new SpeechSynthesisUtterance(" " + targetText); u3.lang = langCode; u3.rate = 0.5; 
-        let u4 = new SpeechSynthesisUtterance(" " + targetText); u4.lang = langCode; u4.rate = 1.0; 
-        
-        const playNext = (u) => { if (state.handsfree) window.speechSynthesis.speak(u); };
-        const scheduleNext = () => { 
-            if (state.handsfree) {
-                state.audioPlaying = false;
-                autoNextTimer = setTimeout(generateHandsfree, 3000); 
-            }
-        }; 
-        
-        u1.onend = () => playNext(u2); u1.onerror = () => playNext(u2);
-        u2.onend = () => playNext(u3); u2.onerror = () => playNext(u3);
-        u3.onend = () => playNext(u4); u3.onerror = () => playNext(u4);
-        u4.onend = scheduleNext;       u4.onerror = scheduleNext;
-
-        if (state.handsfree) window.speechSynthesis.speak(u1); 
-    }
+    function toggleHandsfree() { state.handsfree = !state.handsfree; let btn = document.getElementById('hf-btn'); if (state.handsfree) { btn.classList.add('active'); document.getElementById('badge-handsfree').style.display = 'block'; initAudio(); generate(); } else { btn.classList.remove('active'); document.getElementById('badge-handsfree').style.display = 'none'; window.speechSynthesis.cancel(); if (autoNextTimer) clearTimeout(autoNextTimer); } }
     
+    function playHandsfreeSequence() { 
+        if (!state.handsfree) return; 
+        window.speechSynthesis.cancel(); 
+        
+        state.audioPlaying = true;
+        const grid = document.getElementById('mc-area');
+        if (grid) { grid.style.pointerEvents = 'none'; grid.style.opacity = '0.5'; }
+
+        let cyText = (state.mode === 'context') ? state.speechText : state.currentCY; 
+        let enText = state.currentEN; 
+        
+        let u1 = new SpeechSynthesisUtterance(" " + cyText); u1.lang = 'cy-GB'; u1.rate = 1.0; 
+        let u2 = new SpeechSynthesisUtterance(" " + enText); u2.lang = 'en-US'; u2.rate = 1.0; 
+        let u3 = new SpeechSynthesisUtterance(" " + cyText); u3.lang = 'cy-GB'; u3.rate = 0.5; 
+        let u4 = new SpeechSynthesisUtterance(" " + cyText); u4.lang = 'cy-GB'; u4.rate = 1.0; 
+        
+        u4.onend = () => { 
+            state.audioPlaying = false;
+            if (grid) { grid.style.pointerEvents = 'auto'; grid.style.opacity = '1'; }
+            if(state.handsfree) autoNextTimer = setTimeout(generate, 3000); 
+        }; 
+        u4.onerror = () => {
+            state.audioPlaying = false;
+            if (grid) { grid.style.pointerEvents = 'auto'; grid.style.opacity = '1'; }
+        };
+
+        window.speechSynthesis.speak(u1); 
+        window.speechSynthesis.speak(u2); 
+        window.speechSynthesis.speak(u3); 
+        window.speechSynthesis.speak(u4); 
+    }
+
     function handleSpeakerClick() { speakerTaps++; if (speakerTapTimer) clearTimeout(speakerTapTimer); speakerTapTimer = setTimeout(() => { let rate = 1.0; let msg = ""; if (speakerTaps === 1) { rate = 1.0; } else if (speakerTaps === 2) { rate = 0.5; msg = "🐢 Slow Speed (0.5x)"; } else { rate = 0.25; msg = "🐢🐢 Super Slow (0.25x)"; } if (msg) { let fb = document.getElementById('voice-feedback'); fb.innerText = msg; fb.style.color = "var(--primary)"; setTimeout(() => { if(fb.innerText === msg) fb.innerText = ""; }, 1500); } speak(rate); speakerTaps = 0; }, 300); }
     
     function updateModeUI(m) {
@@ -1699,33 +1531,9 @@
         document.getElementById('input-row').style.display = (m==='translator' || m==='gender' || m==='context') ? 'none' : 'flex';
     }
 
-   function selectMode(m) {
+    function selectMode(m) {
         state.mode = m;
-        
-        const campToggle = document.getElementById('campaign-toggle');
-        if (campToggle) {
-            campToggle.checked = false;
-            toggleCampaign(); 
-        }
-
-        const mainBtn = document.getElementById('main-btn');
-        const displayBox = document.getElementById('display-box');
-
-        if (m === 'translator') {
-            if (displayBox) displayBox.classList.add('trans-active');
-            if (mainBtn) {
-                mainBtn.style.display = 'flex'; 
-                mainBtn.innerText = "LLEFARU 🔊"; 
-            }
-            setTimeout(() => document.getElementById('type-input').focus(), 300);
-        } else {
-            if (displayBox) displayBox.classList.remove('trans-active');
-            if (mainBtn) mainBtn.innerText = "HEPGOR ➡️"; 
-        }
-
         updateModeUI(m);
-        toggleSettings(); 
-        generate(); 
     }
 
     function switchMode(m) { 
@@ -1762,6 +1570,8 @@
         source.connect(audioCtx.destination); 
         source.start(0); 
     }
+
+    let isFirstVoice = true;
 
     function speak(rate) { 
         if (!userInteracted) return; 
@@ -1969,7 +1779,7 @@
 
     function resetProgress() { 
         if(confirm("Reset?")) { 
-            state.xp=0; state.streak=0; categoryStats={numbers:0,context:0,prices:0,dates:0,time:0,gender:0}; 
+            state.xp=0; state.streak=0; categoryStats={numbers:0,context:0,prices:0,dates:0,time:0,gender:0,ordinal:0,phone:0}; 
             localStorage.clear(); location.reload(); 
         } 
     }
@@ -2067,339 +1877,219 @@
         }
 
         const isCamp = document.getElementById('campaign-toggle') ? document.getElementById('campaign-toggle').checked : false;
-        
-        const xpBox = document.getElementById('stat-xp');
+        const xpBox = document.querySelector('.stat-item[title="XP"]');
         const rankDisplay = document.getElementById('rank-display');
 
         if (isCamp) {
             if(xpBox) xpBox.innerHTML = `⭐ <span id="xp-display">${state.campaignXP}</span>`;
-            if(rankDisplay) rankDisplay.innerText = campTitle; 
+            if(rankDisplay) rankDisplay.innerText = campTitle.split(' (')[0]; 
         } else {
             if(xpBox) xpBox.innerHTML = `🏋️ <span id="xp-display">${state.practiceXP}</span>`;
-            if(rankDisplay) rankDisplay.innerText = pracTitle; 
+            if(rankDisplay) rankDisplay.innerText = pracTitle.split(' (')[0]; 
         }
 
-        const streakBox = document.getElementById('stat-streak');
-        if(streakBox) {
-            streakBox.innerHTML = `🔥 <span id="streak-display">${state.streak}</span>`;
-        }
+        const streakBox = document.querySelector('.stat-item[title="Streak"]');
+        if(streakBox) streakBox.innerHTML = `🔥 <span id="streak-display">${state.streak}</span>`;
 
-        const dailyDisplay = document.getElementById('daily-display');
-        if (dailyDisplay) {
+        const dailyBox = document.getElementById('daily-display');
+        if (dailyBox) {
             if (state.goalMet) {
-                dailyDisplay.innerHTML = `<span style="color:var(--secondary)">Wedi gorffen! ✔️</span>`;
+                dailyBox.innerHTML = `<span style="color:var(--secondary)">Done! ✔️</span>`;
             } else {
-                dailyDisplay.innerText = `${state.dailyXP}/${state.dailyGoal}`;
+                dailyBox.innerText = `${state.dailyXP}/${state.dailyGoal}`;
             }
         }
     }
-
-    function translateAndSpeak() {
-        const inputField = document.getElementById('type-input');
-        const val = parseInt(inputField.value);
-        
-        if (isNaN(val)) return;
-
-        const welshResult = numToCy(val);
-        
-        const cyBox = document.getElementById('cy-text');
-        cyBox.innerText = welshResult;
-        cyBox.classList.add('visible');
-
-        state.currentCY = welshResult;
-        speak(1.0);
-    }
-
-    function handleMainButton() {
-        if (state.mode === 'translator') {
-            translateAndSpeak();
-        } else {
-            checkTyped(); 
-        }
-    }
-    
 </script>
 
 <style>
-        :root { --primary: #1a73e8; --secondary: #34a853; --bg: #f8f9fa; --card: #ffffff; --text: #202124; --border: #dadce0; --error: #d93025; --rank-color: #fbbc04; --header-h: 50px; --callout-bg-blue: #f0f7ff;
-    --callout-border-blue: #cce5ff;
-    --callout-text-blue: #0056b3;
+    :root { 
+        --primary: #1a73e8; --secondary: #34a853; --bg: #f8f9fa; --card: #ffffff; 
+        --text: #202124; --border: #dadce0; --error: #d93025; --rank-color: #fbbc04; 
+        --header-h: 50px; 
+        --callout-bg-blue: #f0f7ff; --callout-border-blue: #cce5ff; --callout-text-blue: #0056b3;
+        --callout-bg-red: #fcf4f4; --callout-border-red: #f8d7da; --callout-text-red: #721c24;
+        --callout-bg-orange: #fff3e0; --callout-border-orange: #ffe0b2; --callout-text-orange: #e65100;
+    } 
+    @media (prefers-color-scheme: dark) {
+        :root { 
+            --primary: #8ab4f8; --secondary: #81c995; --bg: #121212; --card: #1e1e1e; 
+            --text: #e8eaed; --border: #3c4043; --error: #f28b82; --rank-color: #fdd663; 
+            --callout-bg-blue: #0d1b2a; --callout-border-blue: #1b3a57; --callout-text-blue: #a3cfbb;
+            --callout-bg-red: #2d1616; --callout-border-red: #5c2b2b; --callout-text-red: #f8d7da;
+            --callout-bg-orange: #2b1b0a; --callout-border-orange: #52361b; --callout-text-orange: #ffcc80; 
+        }
+    }
+    body.force-dark { --primary: #8ab4f8; --secondary: #81c995; --bg: #121212; --card: #1e1e1e; --text: #e8eaed; --border: #3c4043; --error: #f28b82; --rank-color: #fdd663; }
+    body.force-light { --primary: #1a73e8; --secondary: #34a853; --bg: #f8f9fa; --card: #ffffff; --text: #202124; --border: #dadce0; --error: #d93025; --rank-color: #fbbc04; }
     
-    --callout-bg-red: #fcf4f4;
-    --callout-border-red: #f8d7da;
-    --callout-text-red: #721c24;
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+    body { font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-    --callout-bg-orange: #fff3e0;
-    --callout-border-orange: #ffe0b2;
-    --callout-text-orange: #e65100;
-        } 
-        @media (prefers-color-scheme: dark) {
-            :root { --primary: #8ab4f8; --secondary: #81c995; --bg: #121212; --card: #1e1e1e; --text: #e8eaed; --border: #3c4043; --error: #f28b82; --rank-color: #fdd663; --callout-bg-blue: #0d1b2a;
-        --callout-border-blue: #1b3a57;
-        --callout-text-blue: #a3cfbb;
+    .brand-header {
+        display: flex; align-items: center; justify-content: center; position: relative;
+        background: linear-gradient(to bottom, #ffffff 50%, #00b140 50%); 
+        width: 100%; padding: 15px 0; height: 60px; z-index: 10;
+    }
 
-        --callout-bg-red: #2d1616;
-        --callout-border-red: #5c2b2b;
-        --callout-text-red: #f8d7da;
+    .header-controls-left { position: absolute; left: 10px; display: flex; }
+    .header-controls-right { position: absolute; right: 10px; display: flex; }
 
-        --callout-bg-orange: #2b1b0a;
-        --callout-border-orange: #52361b;
-        --callout-text-orange: #ffcc80; }
-        }
-        body.force-dark { --primary: #8ab4f8; --secondary: #81c995; --bg: #121212; --card: #1e1e1e; --text: #e8eaed; --border: #3c4043; --error: #f28b82; --rank-color: #fdd663; }
-        body.force-light { --primary: #1a73e8; --secondary: #34a853; --bg: #f8f9fa; --card: #ffffff; --text: #202124; --border: #dadce0; --error: #d93025; --rank-color: #fbbc04; }
-        
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    .brand-header .icon-btn {
+        background: rgba(255, 255, 255, 0.9); box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        width: 36px; height: 36px; border-radius: 50%; display: flex;
+        align-items: center; justify-content: center; font-size: 1.1rem; border: 1px solid var(--border);
+    }
 
-        .brand-header {
-        display: flex;
-         align-items: center;
-         justify-content: center;
-          position: relative;
-         background: linear-gradient(to bottom, #ffffff 50%, #00b140 50%); 
-        width: 100%;
-        padding: 15px 0;
-        height: 60px;
-        z-index: 10;
-        padding-top: env(safe-area-inset-top, 20px);
-        }
+    .brand-title {
+        background: rgba(255,255,255,0.95); color: #202124; display: inline-block;
+        padding: 4px 15px; border-radius: 20px; font-weight: 800; font-size: 1.1rem;
+        letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); text-transform: uppercase;
+    }
 
-        .header-controls-left { position: absolute; left: 10px; display: flex; }
-        .header-controls-right { position: absolute; right: 10px; display: flex; }
+    .status-bar { 
+        display: flex; justify-content: space-between; align-items: center; 
+        padding: 8px 15px; background: var(--card); border-bottom: 1px solid var(--border); 
+        height: var(--header-h); flex-shrink: 0; font-size: 0.9rem;
+    }
+    .stats-group { display: flex; gap: 15px; align-items: center; font-weight: 700; }
+    .stat-item { display: flex; align-items: center; gap: 4px; }
+    .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 5px; color: var(--text); border-radius: 50%; transition: background 0.2s; }
+    .icon-btn:active { background: rgba(0,0,0,0.1); }
 
-        .brand-header .icon-btn {
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            border: 1px solid var(--border);
-        }
-
-        .brand-title {
-            background: rgba(255,255,255,0.95);
-            color: #202124;
-            display: inline-block;
-            padding: 4px 15px;
-            border-radius: 20px;
-            font-weight: 800;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-            text-transform: uppercase;
-        }
-
-        .status-bar { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 8px 15px; 
-            background: var(--card); 
-            border-bottom: 1px solid var(--border); 
-            height: var(--header-h); 
-            flex-shrink: 0; 
-            font-size: 0.9rem;
-        }
-        .stats-group { display: flex; gap: 15px; align-items: center; font-weight: 700; }
-        .stat-item { display: flex; align-items: center; gap: 4px; }
-        .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 5px; color: var(--text); border-radius: 50%; transition: background 0.2s; }
-        .icon-btn:active { background: rgba(0,0,0,0.1); }
-
-        .game-area { 
-            flex-grow: 1; padding: 15px 15px 5px 15px; overflow-y: auto; 
-            display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; width: 100%; position: relative; 
-        }
-                
-        .display-box { 
-            text-align: center; margin-bottom: 15px; min-height: 110px; 
-            display: flex; flex-direction: column; justify-content: center; 
-            background: var(--card); border-radius: 16px; padding: 15px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); 
-            position: relative; transition: border-color 0.3s;
-        }
-        .mode-label { position: absolute; top: 10px; left: 12px; font-size: 0.7rem; text-transform: uppercase; color: #888; font-weight: 700; letter-spacing: 1px; }
-        
-        .pl-text { font-size: 1.5rem; color: var(--primary); font-weight: 800; margin-bottom: 8px; visibility: hidden; line-height: 1.3; word-wrap: break-word; }
-        .en-text { font-size: 1.1rem; color: #888; visibility: hidden; font-weight: 500; min-height: 1.5rem; }
-        .visible { visibility: visible !important; animation: popIn 0.3s; }
-        .blind-active { opacity: 0; }
-        
-        .trans-active .pl-text { visibility: visible; color: var(--text); font-size: 1.3rem; }
-        .trans-active .en-text { display: none; }
-        
-        .ctx-prefix, .ctx-suffix { color: var(--text); font-weight: 400; opacity: 0.7; font-size: 0.9em; }
-        .ctx-highlight { color: var(--primary); font-weight: 800; border-bottom: 2px solid rgba(26, 115, 232, 0.3); }
-
-        .badge { position: absolute; top: 10px; right: 10px; font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; font-weight: bold; display: none; }
-        .badge-review { background: #e37400; color: white; }
-        
-        .badge-score { 
-            background: var(--secondary); color: white; 
-            display: none; top: 45%; left: 50%; transform: translate(-50%, -50%); 
-            font-size: 2rem; z-index: 20; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3); border-radius: 12px;
-            padding: 10px 20px;
-            animation: scorePop 0.5s forwards; 
-        }
-        .badge-blind { left: auto; right: 10px; top: auto; bottom: 10px; background: #607d8b; color: white; display: none; } 
-        .badge-handsfree { 
-            position: absolute; bottom: 10px; left: 10px; 
-            background: #673ab7; color: white; font-size: 0.75rem; padding: 4px 8px; 
-            border-radius: 6px; font-weight: bold; display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            animation: pulse 2s infinite;
-        }
-
-        .mc-grid { 
-            display: grid; gap: 8px; flex-grow: 1; align-content: start; 
-            /* Removed margin-bottom: 100px; */
-        }
-        .cols-2 { grid-template-columns: 1fr 1fr; }
-        .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-        
-        .mc-btn { 
-            position:relative; background: var(--card); border: 1px solid var(--border); border-bottom-width: 3px;
-            border-radius: 12px; min-height: 55px; font-weight: 700; font-size: 0.95rem; color: var(--text); 
-            cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px; 
-            transition: transform 0.1s, border-bottom-width 0.1s, margin-top 0.1s; word-break: break-word; text-align: center;
-        }
-        
-        .mc-btn:active { transform: translateY(2px); border-bottom-width: 1px; margin-top: 2px; }
-        .mc-key-hint { position: absolute; top: 4px; left: 6px; font-size: 0.65rem; color: var(--primary); opacity: 0.6; }
-        
-        .correct { background: var(--secondary) !important; color: white !important; border-color: var(--secondary) !important; }
-        .wrong { background: var(--error) !important; color: white !important; opacity: 0.6; }
-
-        .type-container { display: none; flex-direction: column; gap: 15px; margin-top: 10px; }
-        .type-input { width: 100%; padding: 15px; font-size: 1.4rem; text-align: center; border: 2px solid var(--border); border-radius: 12px; background: var(--card); color: var(--text); outline: none; }
-        .type-input:focus { border-color: var(--primary); }
-        .btn-check { width: 100%; background: var(--primary); color: white; padding: 15px; border-radius: 12px; font-weight: bold; border: none; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.2); }
-
-        .footer { 
-            background: var(--card); padding: 15px; 
-            border-top: 1px solid var(--border); display: grid; gap: 12px; z-index: 100; height: 85px; 
-            grid-template-columns: 2fr 1fr 1fr 1fr; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); 
-            padding-bottom: env(safe-area-inset-bottom, 20px);
-            /* NEW: Let flexbox handle positioning instead of floating it */
-            position: relative;
-            flex-shrink: 0;
-        }
-        .btn-action { 
-            border: none; border-radius: 12px; font-weight: 700; font-size: 0.9rem; color: white; cursor: pointer; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-        }
-        .btn-listen { background: var(--secondary); font-size: 1.8rem; transition: transform 0.1s; }
-        .btn-listen:active { transform: scale(0.95); }
-        
-        .btn-hf { background: #673ab7; font-size: 1.6rem; }
-        .btn-hf.active { background: #d32f2f; animation: pulse 1.5s infinite; }
-        
-        .btn-next { background: #5f6368; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; transition: background 0.3s; }
-        .btn-next.ready { background: var(--primary); }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .modal-box { background: var(--card); width: 95%; max-width: 420px; padding: 25px; border-radius: 24px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.25); }
-        
-        /* THE STICKY CLOSE BUTTON UPDATE */
-        .close-x { 
-            position: sticky; 
-            top: -10px; 
-            z-index: 100; 
-            
-            display: flex; 
-            margin-left: auto; 
-            margin-right: -10px; 
-            margin-bottom: -15px; 
-            
-            font-size: 1.5rem; 
-            background: var(--bg); width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; color: var(--text); 
-            align-items:center; justify-content:center; 
-            border: 1px solid var(--border);
-            
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        
-        .set-group { background: var(--bg); padding: 15px; border-radius: 16px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .set-title { font-weight: 800; color: var(--primary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
-        .set-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.95rem; font-weight: 600; }
-        .set-row:last-child { margin-bottom: 0; }
-        
-        .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .mode-btn { padding: 10px; border: 2px solid var(--border); background: var(--card); border-radius: 10px; font-weight: 600; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
-        .mode-btn.active { border-color: var(--primary); background: rgba(26, 115, 232, 0.1); color: var(--primary); }
-        .mode-btn span { font-size: 1.1rem; }
-
-        .help-sec { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .help-sec:last-child { border: none; }
-        .help-h { font-size: 1rem; color: var(--primary); margin-bottom: 8px; font-weight: 800; }
-        .help-p { font-size: 0.9rem; line-height: 1.5; color: var(--text); margin-bottom: 6px; opacity: 0.9; }
-        .point-tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; background: #eee; color: #333; margin-right: 5px; }
-        .pt-green { background: var(--secondary); color: white; }
-        .pt-red { background: var(--error); color: white; }
-        
-        select, input[type=checkbox] { cursor: pointer; accent-color: var(--primary); }
-        select { padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 0.9rem; }
-        input[type=range] { width: 100%; accent-color: var(--primary); }
-
-        @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes scorePop { 
-            0% { opacity: 0; transform: translate(-50%, -20%) scale(0.5); } 
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 
-            100% { opacity: 0; transform: translate(-50%, -80%) scale(0.8); } 
-        }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        .confetti { position: fixed; top: -10px; width: 10px; height: 10px; border-radius: 50%; animation: fall linear forwards; z-index: 9999; pointer-events: none; }
-        @keyframes fall { to { transform: translateY(105vh) rotate(720deg); } }
-        .btn-review { width:100%; padding:10px; margin-top:10px; background:var(--text); color:var(--bg); border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
+    .game-area { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; width: 100%; position: relative; }
     
-        .grammar-badge {
-    background: var(--secondary);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    margin-bottom: 10px;
-    display: none;
-}
-        .grammar-badge.visible { opacity: 1; display: inline-block;}
-        .tab-header { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
-        .tab-btn { flex: 1; background: none; border: none; padding: 12px; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
-        .tab-btn:hover { background: rgba(0,0,0,0.03); }
-        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .display-box { 
+        text-align: center; margin-bottom: 20px; min-height: 140px; 
+        display: flex; flex-direction: column; justify-content: center; 
+        background: var(--card); border-radius: 16px; padding: 20px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); 
+        position: relative; transition: border-color 0.3s;
+    }
+    .mode-label { position: absolute; top: 10px; left: 12px; font-size: 0.7rem; text-transform: uppercase; color: #888; font-weight: 700; letter-spacing: 1px; }
+    
+    .pl-text { font-size: 1.5rem; color: var(--primary); font-weight: 800; margin-bottom: 8px; visibility: hidden; line-height: 1.3; word-wrap: break-word; }
+    .en-text { font-size: 1.1rem; color: #888; visibility: hidden; font-weight: 500; min-height: 1.5rem; }
+    .visible { visibility: visible !important; animation: popIn 0.3s; }
+    .blind-active { opacity: 0; }
+    
+    .trans-active .pl-text { visibility: visible; color: var(--text); font-size: 1.3rem; }
+    .trans-active .en-text { display: none; }
+    
+    .ctx-prefix, .ctx-suffix { color: var(--text); font-weight: 400; opacity: 0.7; font-size: 0.9em; }
+    .ctx-highlight { color: var(--primary); font-weight: 800; border-bottom: 2px solid rgba(26, 115, 232, 0.3); }
 
-        .tab-content { display: none; animation: popIn 0.3s; }
-        .tab-content.active { display: block; }
+    .badge { position: absolute; top: 10px; right: 10px; font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; font-weight: bold; display: none; }
+    .badge-review { background: #e37400; color: white; }
+    
+    .badge-score { 
+        background: var(--secondary); color: white; display: none; 
+        top: 45%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; 
+        z-index: 20; box-shadow: 0 4px 20px rgba(0,0,0,0.3); border-radius: 12px;
+        padding: 10px 20px; animation: scorePop 0.5s forwards; 
+    }
+    .badge-blind { left: auto; right: 10px; top: auto; bottom: 10px; background: #607d8b; color: white; display: none; } 
+    .badge-handsfree { 
+        position: absolute; bottom: 10px; left: 10px; background: #673ab7; 
+        color: white; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; 
+        font-weight: bold; display: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        animation: pulse 2s infinite;
+    }
 
-        .modal-content { background-color: var(--bg); color: var(--text); padding: 20px; border-radius: 15px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .mc-grid { display: grid; gap: 12px; flex-grow: 1; align-content: start; margin-bottom: 100px; }
+    .cols-2 { grid-template-columns: 1fr 1fr; }
+    .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    
+    .mc-btn { 
+        position:relative; background: var(--card); border: 1px solid var(--border); border-bottom-width: 3px;
+        border-radius: 12px; min-height: 65px; font-weight: 700; font-size: 0.95rem; color: var(--text); 
+        cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px; 
+        transition: transform 0.1s, border-bottom-width 0.1s, margin-top 0.1s; word-break: break-word; text-align: center;
+    }
+    .mc-btn:active { transform: translateY(2px); border-bottom-width: 1px; margin-top: 2px; }
+    
+    .correct { background: var(--secondary) !important; color: white !important; border-color: var(--secondary) !important; }
+    .wrong { background: var(--error) !important; color: white !important; opacity: 0.6; }
 
-        .help-p, .help-sec { color: var(--text) !important; line-height: 1.6; opacity: 0.9; }
+    .type-container { display: none; flex-direction: column; gap: 15px; margin-top: 10px; }
+    .type-input { width: 100%; padding: 15px; font-size: 1.4rem; text-align: center; border: 2px solid var(--border); border-radius: 12px; background: var(--card); color: var(--text); outline: none; }
+    .type-input:focus { border-color: var(--primary); }
+    .btn-check { width: 100%; background: var(--primary); color: white; padding: 15px; border-radius: 12px; font-weight: bold; border: none; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.2); }
 
-        #tab-grammar ul li { color: var(--text) !important; }
+    .footer { 
+        position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card); padding: 15px; 
+        border-top: 1px solid var(--border); display: grid; gap: 12px; z-index: 100; height: 85px; 
+        grid-template-columns: 2fr 1fr 1fr 1fr; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); 
+    }
+    .btn-action { 
+        border: none; border-radius: 12px; font-weight: 700; font-size: 0.9rem; color: white; cursor: pointer; 
+        display: flex; flex-direction: column; align-items: center; justify-content: center; 
+    }
+    .btn-listen { background: var(--secondary); font-size: 1.8rem; transition: transform 0.1s; }
+    .btn-listen:active { transform: scale(0.95); }
+    .btn-hf { background: #673ab7; font-size: 1.6rem; }
+    .btn-hf.active { background: #d32f2f; animation: pulse 1.5s infinite; }
+    .btn-next { background: #5f6368; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; transition: background 0.3s; }
+    .btn-next.ready { background: var(--primary); }
 
-        .help-h { color: var(--secondary); font-weight: bold; margin-bottom: 8px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+    .modal-box { background: var(--card); width: 95%; max-width: 420px; padding: 25px; border-radius: 24px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.25); }
+    .close-x { 
+        position: absolute; top: 20px; right: 20px; font-size: 1.5rem; 
+        background: var(--bg); width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; color: var(--text); 
+        display:flex; align-items:center; justify-content:center; border: 1px solid var(--border);
+    }
+    
+    .set-group { background: var(--bg); padding: 15px; border-radius: 16px; margin-bottom: 15px; border: 1px solid var(--border); }
+    .set-title { font-weight: 800; color: var(--primary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+    .set-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.95rem; font-weight: 600; }
+    .set-row:last-child { margin-bottom: 0; }
+    
+    .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .mode-btn { padding: 10px; border: 2px solid var(--border); background: var(--card); border-radius: 10px; font-weight: 600; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
+    .mode-btn.active { border-color: var(--primary); background: rgba(26, 115, 232, 0.1); color: var(--primary); }
+    .mode-btn span { font-size: 1.1rem; }
 
-#display-number {
-    font-size: clamp(2.5rem, 12vw, 5rem);
-    text-align: center;
-    width: 100%;
-}
-body, .container {
-    height: 100vh;
-    height: 100dvh; 
-    margin: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--bg);
-}
+    .help-sec { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    .help-sec:last-child { border: none; }
+    .help-h { font-size: 1rem; color: var(--primary); margin-bottom: 8px; font-weight: 800; }
+    .help-p { font-size: 0.9rem; line-height: 1.5; color: var(--text); margin-bottom: 6px; opacity: 0.9; }
+    .point-tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; background: #eee; color: #333; margin-right: 5px; }
+    .pt-green { background: var(--secondary); color: white; }
+    .pt-red { background: var(--error); color: white; }
+    
+    select, input[type=checkbox] { cursor: pointer; accent-color: var(--primary); }
+    select { padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 0.9rem; }
+    input[type=range] { width: 100%; accent-color: var(--primary); }
 
-    </style>
+    @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes scorePop { 
+        0% { opacity: 0; transform: translate(-50%, -20%) scale(0.5); } 
+        20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 
+        80% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 
+        100% { opacity: 0; transform: translate(-50%, -80%) scale(0.8); } 
+    }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+    .confetti { position: fixed; top: -10px; width: 10px; height: 10px; border-radius: 50%; animation: fall linear forwards; z-index: 9999; pointer-events: none; }
+    @keyframes fall { to { transform: translateY(105vh) rotate(720deg); } }
+    .btn-review { width:100%; padding:10px; margin-top:10px; background:var(--text); color:var(--bg); border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
+
+    .grammar-badge { font-size: 0.85rem; color: #ffa726; margin-top: -5px; margin-bottom: 10px; font-weight: bold; letter-spacing: 0.5px; opacity: 0; transition: opacity 0.3s; }
+    .grammar-badge.visible { opacity: 1; }
+    .tab-header { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+    .tab-btn { flex: 1; background: none; border: none; padding: 12px; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .tab-btn:hover { background: rgba(0,0,0,0.03); }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .tab-content { display: none; animation: popIn 0.3s; }
+    .tab-content.active { display: block; }
+
+    .modal-content { background-color: var(--bg); color: var(--text); padding: 20px; border-radius: 15px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+
+    .help-p, .help-sec { color: var(--text) !important; line-height: 1.6; opacity: 0.9; }
+    #tab-grammar ul li { color: var(--text) !important; }
+    .help-h { color: var(--secondary); font-weight: bold; margin-bottom: 8px; }
+</style>
 </body>
 </html>
