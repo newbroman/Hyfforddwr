@@ -293,7 +293,8 @@
                 <div class="help-sec">
                     <div class="help-h">1. Initial Consonant Mutations (Treigladau)</div>
                     <p class="help-p">Unlike English where words change at the end (Dog -> Dogs), in Welsh, the
-                        <b>beginning</b> of the word changes depending on the number and gender.</p>
+                        <b>beginning</b> of the word changes depending on the number and gender.
+                    </p>
                     <ul
                         style="margin-top:10px; padding-left:20px; font-size:0.9rem; color:var(--text); line-height: 1.6;">
                         <li><strong>Treiglad Meddal (Soft Mutation):</strong> The most common change. It happens after
@@ -831,7 +832,11 @@
                 enBox.classList.add('visible');
                 if (badge) badge.classList.add('visible');
             }
+            else if (state.mode === 'numbers' || state.mode === 'prices') {
+                enBox.classList.add('visible');
+            }
             else if (state.rawData && state.rawData.type === 'fraction') {
+                enBox.classList.add('visible');
                 if (badge) badge.classList.add('visible');
             }
 
@@ -917,16 +922,23 @@
             else if (m === 'gender') {
                 let noun = GENDER_NOUNS[Math.floor(Math.random() * GENDER_NOUNS.length)];
                 let n = 0;
-                if (noun.logic === 'living') n = Math.floor(Math.random() * 12) + 1;
-                else if (noun.logic === 'ordering') n = Math.floor(Math.random() * 15) + 1;
-                else if (noun.logic === 'bulk') {
-                    let roll = Math.random();
-                    if (roll < 0.4) n = Math.floor(Math.random() * 50) + 1;
-                    else if (roll < 0.8) n = (Math.floor(Math.random() * 9) + 1) * 50;
-                    else n = (Math.floor(Math.random() * 5) + 1) * 1000;
+
+                let isCampaign = document.getElementById('campaign-toggle') && document.getElementById('campaign-toggle').checked;
+
+                if (isCampaign) {
+                    if (noun.logic === 'living') n = Math.floor(Math.random() * 12) + 1;
+                    else if (noun.logic === 'ordering') n = Math.floor(Math.random() * 15) + 1;
+                    else if (noun.logic === 'bulk') {
+                        let roll = Math.random();
+                        if (roll < 0.4) n = Math.floor(Math.random() * 50) + 1;
+                        else if (roll < 0.8) n = (Math.floor(Math.random() * 9) + 1) * 50;
+                        else n = (Math.floor(Math.random() * 5) + 1) * 1000;
+                    } else {
+                        n = Math.floor(Math.random() * (max - min + 1)) + min;
+                        if (n > 20 && Math.random() < 0.3) n = Math.floor(Math.random() * 20) + 1;
+                    }
                 } else {
                     n = Math.floor(Math.random() * (max - min + 1)) + min;
-                    if (n > 20 && Math.random() < 0.3) n = Math.floor(Math.random() * 20) + 1;
                 }
                 return { num: n, noun };
             }
@@ -959,22 +971,32 @@
             return `${article} ${word}`;
         }
 
-        function numToCy(n, isFeminine = false) {
+        function numToCy(n, isFeminine = false, beforeNoun = false) {
             if (isNaN(n)) return "...";
             if (n === 0) return "dim";
-            if (n < 0) return "minws " + numToCy(Math.abs(n), isFeminine);
+            if (n < 0) return "minws " + numToCy(Math.abs(n), isFeminine, beforeNoun);
 
             let s = "";
             const uArray = isFeminine ? UNITS_FEM : UNITS;
 
             if (n >= 1000000) {
                 let m = Math.floor(n / 1000000);
-                s += numToCy(m) + " miliwn ";
+                // "miliwn" is feminine, so we use feminine numbers before it, and "miliwn" mutates to "filiwn" after 2
+                if (m === 1) s += "un filiwn ";
+                else if (m === 2) s += "dwy filiwn ";
+                else if (m === 3) s += "tair miliwn ";
+                else if (m === 4) s += "pedair miliwn ";
+                else s += numToCy(m, true, true) + " miliwn ";
                 n %= 1000000;
             }
             if (n >= 1000) {
                 let t = Math.floor(n / 1000);
-                if (t === 1) s += "mil "; else if (t === 2) s += "dwy fil "; else s += numToCy(t) + " mil ";
+                // "mil" is feminine, so it takes feminine numbers and mutates to "fil" after 2
+                if (t === 1) s += "mil ";
+                else if (t === 2) s += "dwy fil ";
+                else if (t === 3) s += "tair mil ";
+                else if (t === 4) s += "pedair mil ";
+                else s += numToCy(t, true, true) + " mil ";
                 n %= 1000;
             }
             if (n >= 100) { s += HUNDREDS[Math.floor(n / 100)] + " "; n %= 100; }
@@ -987,7 +1009,11 @@
                 }
                 n %= 10;
             }
-            if (n > 0) s += uArray[n];
+            if (n > 0) {
+                if (beforeNoun && n === 5) s += "pum ";
+                else if (beforeNoun && n === 6) s += "chwe ";
+                else s += uArray[n] + " ";
+            }
 
             return s.trim();
         }
@@ -997,7 +1023,7 @@
             if (n === 2) return nounObj.soft;
             if (n === 3 && nounObj.form === 'm') return nounObj.asp;
             if (n === 3 && nounObj.form === 'f') return nounObj.word;
-            if (n === 6) return nounObj.asp;
+            if (n === 6) return nounObj.asp; // 6 technically also aspirates
             if (n <= 10) return nounObj.word;
             return "o " + nounObj.plSoft;
         }
@@ -1048,15 +1074,8 @@
             if (m === 'gender') {
                 let n = val.num;
                 let nounObj = val.noun;
-                let numStr = "";
 
-                if (n === 1) numStr = "un";
-                else if (n === 2) numStr = nounObj.form === 'f' ? "dwy" : "dau";
-                else if (n === 3) numStr = nounObj.form === 'f' ? "tair" : "tri";
-                else if (n === 4) numStr = nounObj.form === 'f' ? "pedair" : "pedwar";
-                else if (n === 6) numStr = "chwe";
-                else numStr = numToCy(n);
-
+                let numStr = numToCy(n, nounObj.form === 'f', true);
                 let nounStr = getWelshNounForm(n, nounObj);
 
                 state.currentEN = `${n} ${nounObj.en}`;
@@ -1081,7 +1100,7 @@
                 let g = GRAMMAR[val.key];
                 let n = val.val;
 
-                let numTxt = numToCy(n, g.form === 'f');
+                let numTxt = numToCy(n, g.form === 'f', true);
                 let word = (n > 10) ? ("o " + g.plSoft) : getWelshNounForm(n, g);
 
                 let fullPhrase = g.phrase.replace('[N]', numTxt).replace('[W]', word);
@@ -1154,14 +1173,17 @@
 
                 state.currentEN = `£${n}.${pnc.toString().padStart(2, '0')}`;
 
+                let puntWord = n === 1 ? GRAMMAR['cost'].soft : getWelshNounForm(n, GRAMMAR['cost']);
+
                 if (n === 0) {
-                    state.currentCY = `${numToCy(pnc)} ceiniog`;
+                    state.currentCY = `${numToCy(pnc, true, true)} ceiniog`;
                 } else if (pnc === 0) {
-                    state.currentCY = `${numToCy(n)} punt`;
+                    state.currentCY = `${numToCy(n, true, true)} ${puntWord}`;
                 } else {
-                    let pncText = numToCy(pnc);
-                    state.currentCY = `${numToCy(n)} ${pncText}`;
+                    let pncText = numToCy(pnc, true, true);
+                    state.currentCY = `${numToCy(n, true, true)} ${puntWord} a ${pncText} ceiniog`;
                 }
+                document.getElementById('cy-text').innerText = state.currentEN; // Prices mode sets CY text to the EN text to simulate prompt
             }
             else if (m === 'phone') {
                 state.currentEN = `${val.p1} ${val.p2} ${val.p3}`;
@@ -1236,7 +1258,7 @@
             let answers = [];
 
             let style = document.getElementById('btn-style-sel').value;
-            let showDigits = (style === 'digits') && (state.mode !== 'gender' && state.mode !== 'context');
+            let showDigits = (style === 'digits') && (state.mode !== 'gender' && state.mode !== 'context' && state.mode !== 'prices');
 
             if (state.mode === 'gender') {
                 answers.push({ text: state.currentCY, val: state.rawData.num });
