@@ -2111,6 +2111,9 @@
             z-index: 10;
         }
 
+        .brand-title { max-width: calc(100% - 110px); box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        @media (max-width: 400px) { .brand-title { font-size: 0.8rem !important; padding: 4px 10px !important; letter-spacing: 0 !important; } .brand-title span { display: none; } }
+
         .header-controls-left {
             position: absolute;
             left: 10px;
